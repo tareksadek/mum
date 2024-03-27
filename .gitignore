@@ -6,6 +6,13 @@
 .pnp.js
 .yarn/install-state.gz
 
+# Firebase cache
+/.firebase/
+/hosting/
+firebase.json
+firestore.rules
+firestore.indexes.json
+
 # testing
 /coverage
 
@@ -26,6 +33,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -34,3 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# lint
+eslintrc.json
