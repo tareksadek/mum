@@ -72,44 +72,44 @@ const ThemeCreator: React.FC<ThemeProps> = ({
           reverse={currentReverseThemeColor}
         />
       ),
-      label: 'Business'
+      label: 'Tilted'
     },
-    {
-      name: 'card',
-      icon: (
-        <CardLayoutIcon
-          background={currentThemeColor || defaultThemeColor}
-          selectedColor={currentColor || appDefaultColor.code}
-          reverse={currentReverseThemeColor}
-        />
-      ),
-      label: 'Card'
-    },
-    {
-      name: 'social',
-      icon: (
-        <SocialLayoutIcon
-          background={currentThemeColor || defaultThemeColor}
-          selectedColor={currentColor || appDefaultColor.code}
-          reverse={currentReverseThemeColor}
-        />
-      ),
-      label: 'Social'
-    },
+    // {
+    //   name: 'card',
+    //   icon: (
+    //     <CardLayoutIcon
+    //       background={currentThemeColor || defaultThemeColor}
+    //       selectedColor={currentColor || appDefaultColor.code}
+    //       reverse={currentReverseThemeColor}
+    //     />
+    //   ),
+    //   label: 'Card'
+    // },
+    // {
+    //   name: 'social',
+    //   icon: (
+    //     <SocialLayoutIcon
+    //       background={currentThemeColor || defaultThemeColor}
+    //       selectedColor={currentColor || appDefaultColor.code}
+    //       reverse={currentReverseThemeColor}
+    //     />
+    //   ),
+    //   label: 'Social'
+    // },
   ];
 
   const openModalName = useSelector((state: RootState) => state.modal.openModal);
   const isColorPickerModalOpen = openModalName === 'colorPicker';
 
-  // const combinedColors = useMemo(() => {
-  //   const favorites = (favoriteColors || []).map(color => ({ name: 'custom', code: color.code }));
+  const combinedColors = useMemo(() => {
+    const favorites = (favoriteColors || []).map(color => ({ name: 'custom', code: color.code }));
 
-  //   if (favorites.length >= 6) {
-  //     return favorites.slice(0, 6);
-  //   }
+    if (favorites.length >= 6) {
+      return favorites.slice(0, 6);
+    }
 
-  //   return [...favorites, ...themeColors.slice(0, 6 - favorites.length)];
-  // }, [favoriteColors]);
+    return [...favorites, ...themeColors.slice(0, 6 - favorites.length)];
+  }, [favoriteColors]);
 
   // const combinedColors = () => {
   //   const favorites = (favoriteColors || []).map(color => ({ name: 'custom', code: color.code }));
@@ -230,7 +230,7 @@ const ThemeCreator: React.FC<ThemeProps> = ({
           <Typography variant="h4" align="center">Select Main Color</Typography>
         </Box>
         <Grid container spacing={2} alignItems="center" justifyContent="center">
-          {themeColors.map((color) => (
+          {combinedColors.map((color) => (
             <Grid item key={color.code}>
               <Box
                 sx={classes.colorItem}
@@ -261,7 +261,7 @@ const ThemeCreator: React.FC<ThemeProps> = ({
         </Box>
       </Box>
 
-      <Box mt={4}>
+      {/* <Box mt={4}>
         <Box mb={2}>
           <Typography variant="h4" align="center">Social icons color</Typography>
         </Box>
@@ -322,7 +322,7 @@ const ThemeCreator: React.FC<ThemeProps> = ({
             />
           </Grid>
         </Grid>
-      </Box>
+      </Box> */}
 
 
       <Drawer

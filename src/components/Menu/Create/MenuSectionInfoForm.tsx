@@ -5,6 +5,7 @@ import { MenuSectionType } from '../../../types/menu';
 import { ImageType } from '../../../types/restaurant';
 import { coverImageDimensions } from '../../../setup/setup';
 import CoverImageProcessor from '../../Restaurant/CoverImageProcessor';
+import { defaults } from '../../../setup/setup';
 
 interface MenuSectionInfoFormProps {
   sectionImageData: ImageType | null;
@@ -107,7 +108,9 @@ const MenuSectionInfoForm: React.FC<MenuSectionInfoFormProps> = ({
             aria-label="create section tabs"
           >
             <Tab label="Info" {...a11yProps(0)} />
-            <Tab label="Image" {...a11yProps(1)} />
+            {defaults.withSectionImage && (
+              <Tab label="Image" {...a11yProps(1)} />
+            )}
           </Tabs>
         </Box>
         <CustomTabPanel value={tabValue} index={0}>
@@ -166,18 +169,20 @@ const MenuSectionInfoForm: React.FC<MenuSectionInfoFormProps> = ({
             />
           </Box>
         </CustomTabPanel>
-        <CustomTabPanel value={tabValue} index={1}>
-          {!disableFields && (
-            <CoverImageProcessor
-              data={sectionImageData}
-              setData={setSectionImageData}
-              cropWidth={coverImageDimensions.width}
-              cropHeight={coverImageDimensions.height}
-              parentModal="sectionDialog"
-              createBase64={false}
-            />
-          )}
-        </CustomTabPanel>
+        {defaults.withSectionImage && (
+          <CustomTabPanel value={tabValue} index={1}>
+            {!disableFields && (
+              <CoverImageProcessor
+                data={sectionImageData}
+                setData={setSectionImageData}
+                cropWidth={coverImageDimensions.width}
+                cropHeight={coverImageDimensions.height}
+                parentModal="sectionDialog"
+                createBase64={false}
+              />
+            )}
+          </CustomTabPanel>
+        )}
       </Box>
     </Box>
   );

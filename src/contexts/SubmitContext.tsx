@@ -43,10 +43,6 @@ export const SubmitProvider: React.FC<SubmitProviderProps> = ({ children }) => {
     setSubmitInternal(() => fn);
   }, []);
 
-  // console.log(formChanged);
-  // console.log(formValid);
-  
-
   return (
     <SubmitContext.Provider value={{ submit, setSubmit, formChanged, setFormChanged, formValid, setFormValid }}>
       {children}

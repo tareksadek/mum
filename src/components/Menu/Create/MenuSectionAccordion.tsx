@@ -72,7 +72,6 @@ const MenuSectionAccordion: React.FC<MenuSectionAccordionProps> = ({
   };
 
   const handleMouseDown = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(expanded)
     if (expanded && expanded !== null) {
       event.preventDefault();
       setDragAttemptWhileExpanded(true);
@@ -81,7 +80,7 @@ const MenuSectionAccordion: React.FC<MenuSectionAccordionProps> = ({
   };
 
   return (
-    <Box >
+    <Box>
       <Accordion
         sx={classes.accordionContainer}
         expanded={expanded === sectionId}
@@ -169,7 +168,7 @@ const MenuSectionAccordion: React.FC<MenuSectionAccordionProps> = ({
           </Box>
         </AccordionSummary>
         <Box
-          sx={{ ...classes.accordionDetails, display: `${expanded ? 'block' : 'none'}` }}
+          sx={{ ...classes.accordionDetails, display: `${expanded === sectionId ? 'block' : 'none'}` }}
         >
           <AccordionDetails>
             {/* {expanded === sectionId ? children : null } */}

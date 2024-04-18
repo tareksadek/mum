@@ -82,19 +82,30 @@ const ProfileImageProcessor: React.FC<ProfileImageProps> = ({
     setData({
       url: null,
       blob: null,
-      base64: null
+      base64: null,
+      removed: true
     });
   }
 
   if (isLoading) {
     if (data && data.url) {
       return (
-        <Image
+        // <Image
+        //   src={data.url}
+        //   alt="restaurant"
+        //   width={120}
+        //   height={120}
+        //   style={{maxWidth: cropWidth || 'initial' }}
+        // />
+        <img
           src={data.url}
           alt="restaurant"
-          width={120}
-          height={120}
-          style={{maxWidth: cropWidth || 'initial' }}
+          style={{
+            width: 120,
+            height: 120,
+            objectFit: 'cover',
+            maxWidth: cropWidth || 'initial'
+          }}
         />
       )
     }
@@ -112,12 +123,23 @@ const ProfileImageProcessor: React.FC<ProfileImageProps> = ({
           mt={2}
         >
           <Box sx={classes.currentImageContainer}>
-            <Image
+            {/* <Image
               src={data.url}
               alt="Restaurant logo"
               width={120}
               height={120}
               style={{
+                borderRadius: 100,
+                maxWidth: cropWidth || 'initial'
+              }}
+            /> */}
+            <img
+              src={data.url}
+              alt="Restaurant logo"
+              style={{
+                width: 120,
+                height: 120,
+                objectFit: 'cover',
                 borderRadius: 100,
                 maxWidth: cropWidth || 'initial'
               }}

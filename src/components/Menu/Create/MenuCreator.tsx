@@ -1,9 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
-import { Box, Button, CircularProgress, IconButton, Typography, Drawer, TextField, Alert, Chip } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, Typography, Drawer, TextField, Alert, Chip, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import { MenuType } from '../../../types/menu';
 import { useLayoutStyles } from '../../../theme/layout';
 import { useMenuCreatorStyles } from './styles';
@@ -11,9 +12,11 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { EditIcon } from '../../../layout/CustomIcons';
 import { RootState, AppDispatch } from '../../../store/reducers';
 import { openModal, closeModal } from '../../../store/reducers/modal';
-import { createRestaurantMenu } from '../../../store/reducers/menu';
+import { createRestaurantMenu, editRestaurantMenu } from '../../../store/reducers/menu';
 import { authSelector } from '../../../store/selectors/auth';
 import { restaurantSelector } from '../../../store/selectors/restaurant';
+import { menuSelector } from '../../../store/selectors/menu';
+import { currencies } from '../../../setup/setup';
 
 interface LinksCreatorProps {
   menus: MenuType[] | null;
@@ -29,26 +32,36 @@ const MenuCreator: React.FC<LinksCreatorProps> = ({ menus, loading }) => {
     handleSubmit,
     reset,
     formState,
+    setValue,
   } = useForm<MenuType>({ mode: 'onChange' });
   const { errors } = formState;
   const { userId } = useSelector(authSelector);
-  const { restaurant } = useSelector(restaurantSelector);
+  const { restaurant, restaurantId } = useSelector(restaurantSelector);
+  const { menu, menuId } = useSelector(menuSelector);
   const openModalName = useSelector((state: RootState) => state.modal.openModal);
-  const isFirstMenu = menus && menus.length === 0
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const isFirstMenu = !menus || (menus && menus.length === 0)
   const isCreateMenuModalOpen = openModalName === 'createMenu';
   const router = useRouter();
 
   const onSubmit = (data: MenuType) => {
     const menuData = {
       name: data.name,
-      isActive: isFirstMenu || undefined
+      currency: data.currency,
+      isActive: isFirstMenu || false
     }
-    if (restaurant && restaurant.id && userId) {
-      dispatch(createRestaurantMenu({ userId, restaurantId: restaurant?.id, menuData }))
+    if (restaurant && restaurantId && userId) {
+      if (isEditing && menuId) {
+        dispatch(editRestaurantMenu({ userId, restaurantId, menuId, menuData }))
+      } else {
+        dispatch(createRestaurantMenu({ userId, restaurantId, menuData }))
+      }
     }
     dispatch(closeModal())
+    setIsEditing(false)
     reset({
       isActive: isFirstMenu || false,
+      currency: "",
       name: "",
     });
   };  
@@ -57,15 +70,23 @@ const MenuCreator: React.FC<LinksCreatorProps> = ({ menus, loading }) => {
     dispatch(openModal('createMenu'));
   };
 
-  const handleEditMenu = (menuId: string | undefined) => {
+  const handleMenuDetails = (menuId: string | undefined) => {
     if (menuId) {
       router.push(`/menus/${menuId}`)
     } 
   };
 
-  const handleDeleteMenu = (index: number, isSocialLink: boolean) => {
-   
+  const handleEditMenu = (e: React.SyntheticEvent, menuId: string | undefined) => {
+    e.stopPropagation()
+    setIsEditing(true)
+    setValue('currency', menu?.currency)
+    setValue('name', menu?.name)
+    dispatch(openModal('createMenu'));
   };
+
+  // const handleDeleteMenu = (index: number, isSocialLink: boolean) => {
+  
+  // };
 
   return (
     <Box>
@@ -92,6 +113,7 @@ const MenuCreator: React.FC<LinksCreatorProps> = ({ menus, loading }) => {
                       alignItems="center"
                       justifyContent="space-between"
                       flexWrap="wrap"
+                      onClick={() => handleMenuDetails(menu.id)}
                     >
                       <Box
                         display="flex"
@@ -107,25 +129,31 @@ const MenuCreator: React.FC<LinksCreatorProps> = ({ menus, loading }) => {
                                 {menu.name}
                               </b>
                             </Typography>
-                            {menu.isActive && (
+                            {/* {menu.isActive && (
                               <Chip label="Active" size="small" sx={classes.activeChip} />
-                            )}
+                            )} */}
                           </Box>
                         </Box>
                       </Box>
                       <Box>
                         <IconButton
-                          onClick={() => handleEditMenu(menu.id)}
+                          onClick={() => handleMenuDetails(menu.id)}
+                          sx={classes.menuIconButton}
+                        >
+                          <ViewListIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={(e) => handleEditMenu(e, menu.id)}
                           sx={classes.menuIconButton}
                         >
                           <EditIcon />
                         </IconButton>
-                        <IconButton
+                        {/* <IconButton
                           onClick={() => handleDeleteMenu(index, false)}
                           sx={classes.menuIconButton}
                         >
                           <DeleteOutlineIcon />
-                        </IconButton>
+                        </IconButton> */}
                       </Box>
                     </Box>
                   </Box>
@@ -183,30 +211,49 @@ const MenuCreator: React.FC<LinksCreatorProps> = ({ menus, loading }) => {
           </Box>
           <form onSubmit={handleSubmit(onSubmit)}>
             {isCreateMenuModalOpen && (
-              <Box mb={1}>
-                <Controller
-                  name="name"
-                  control={control}
-                  defaultValue=""
-                  rules={{
-                    required: "Title is required",
-                    validate: value => (value && value.length <= 39) || "Title must be 40 characters or less"
-                  }}
-                  render={({ field: { ref, ...inputProps } }) => (
-                    <TextField
-                      label="Menu Title*: i.e Menu, Appetizers, Drinks..."
-                      inputRef={ref}
-                      {...inputProps}
-                      inputProps={{
-                        maxLength: 40
-                      }}
-                      error={Boolean(errors.name)}
-                      helperText={errors.name?.message}
-                      fullWidth
-                    />
-                  )}
-                />
-              </Box>
+              <>
+                <Box mb={2}>
+                  <Controller
+                    name="name"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: "Title is required",
+                      validate: value => (value && value.length <= 39) || "Title must be 40 characters or less"
+                    }}
+                    render={({ field: { ref, ...inputProps } }) => (
+                      <TextField
+                        label="Menu Title*: i.e Our Menu, Appetizers, Drinks..."
+                        inputRef={ref}
+                        {...inputProps}
+                        inputProps={{
+                          maxLength: 40
+                        }}
+                        error={Boolean(errors.name)}
+                        helperText={errors.name?.message}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Box>
+                <Box mb={1}>
+                  <Controller
+                    name="currency"
+                    control={control}
+                    defaultValue="USD"
+                    rules={{ required: "Currency selection is required" }}
+                    render={({ field }) => (
+                      <TextField {...field} select label="Currency" fullWidth variant="outlined">
+                        {currencies.map((currency) => (
+                          <MenuItem key={currency.code} value={currency.code}>
+                            {`${currency.symbol} - ${currency.name}`}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                </Box>
+              </>
             )}
 
             <Box mt={2}>
@@ -217,7 +264,7 @@ const MenuCreator: React.FC<LinksCreatorProps> = ({ menus, loading }) => {
                 color="primary"
                 fullWidth
               >
-                Create
+                {isEditing ? 'Save' : 'Create'}
               </Button>
             </Box>
           </form>

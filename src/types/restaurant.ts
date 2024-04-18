@@ -40,6 +40,7 @@ export type ImageType = {
   url?: string | null;
   blob?: Blob | null;
   base64?: string | null;
+  removed?: boolean;
 }
 
 export type LinkType = {
@@ -77,6 +78,21 @@ export type VisitType = {
   visitedOn: Date | string;
 }
 
+export type WorkingHour = {
+  from: string;
+  to: string;
+}
+  
+export type WorkingDay = {
+  active: boolean;
+  dayName: string;
+  workingHours: WorkingHour[];
+}
+  
+export type WorkingDaysForm = {
+  workingDays: WorkingDay[];
+}
+
 export type RestaurantDataType = {
   basicInfoData?: BasicInfoFormDataTypes | null;
   aboutData?: AboutFormDataTypes | null;
@@ -91,6 +107,7 @@ export type RestaurantDataType = {
   activeMenuId?: string;
   themeSettings?: ThemeSettingsType;
   favoriteColors?: ColorType[] | null;
+  workingDays?: WorkingDaysForm;
   createdOn?: Date | string | null,
   title?: string | null;
   contacts?: number | null;
@@ -114,4 +131,5 @@ export type CreateRestaurantResponseType =
   | { success: true; restaurant: { id: string; title: string, data: RestaurantDataType } }
   | { success: false; error: string }
   | { success: boolean; url?: string | null };
+
 

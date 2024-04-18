@@ -8,15 +8,18 @@ import RestaurantHeader from './RestaurantHeader';
 import AppSideMenu from './AppSideMenu';
 import BottomNav from './BottomNav';
 import BusinessLayout from '../components/Restaurant/View/Business/Layout';
+import DefaultLayout from '../components/Restaurant/View/Default/Layout';
 
 import { authSelector } from '../store/selectors/auth';
 import { restaurantSelector } from '../store/selectors/restaurant';
+import { menuSelector } from '../store/selectors/menu';
 import { RootState, AppDispatch } from '../store/reducers';
 import { openModal, closeModal } from '../store/reducers/modal';
 import { RestaurantDataType } from '../types/restaurant';
 import useAuth from '../hooks/useAuth';
 import { fetchRestaurantLinks } from '../store/reducers/restaurant';
 import { fetchRestaurantMenu } from '../store/reducers/menu'; 
+import { setMode } from '../store/reducers/appMode';
 import { useAppStyles } from './appStyles';
 
 interface AppLayoutProps {
@@ -29,10 +32,11 @@ const RestaurantLayout: React.FC<AppLayoutProps> = ({ restaurant }) => {
   const [pageValue, setPageValue] = useState(1);
   const { setSpecificTheme } = useTheme(); 
   const { loadingAuth, isAdmin } = useAuth();
-  const { restaurantLinks, loadingRestaurant } = useSelector(restaurantSelector);
+  const { menuId } = useSelector(menuSelector)
 
   const { isLoggedIn } = useSelector(authSelector);
   const openModalName = useSelector((state: RootState) => state.modal.openModal);
+  const didModeChange = useSelector((state: RootState) => state.mode.didChange);
 
   const isSideMenuOpen = openModalName === 'sideMenu';
 
@@ -43,21 +47,21 @@ const RestaurantLayout: React.FC<AppLayoutProps> = ({ restaurant }) => {
     }
   }, [openModalName, dispatch]);
 
-  // useEffect(() => {
-  //     if (openModalName) {
-  //         window.history.pushState(null, "", window.location.pathname);
-  //         window.addEventListener("popstate", handlePopState);
-  //     }
-  //     return () => {
-  //         window.removeEventListener("popstate", handlePopState);
-  //     };
-  // }, [openModalName, handlePopState]);
+  useEffect(() => {
+      if (openModalName) {
+          window.history.pushState(null, "", window.location.pathname);
+          window.addEventListener("popstate", handlePopState);
+      }
+      return () => {
+          window.removeEventListener("popstate", handlePopState);
+      };
+  }, [openModalName, handlePopState]);
 
   useEffect(() => {
     const handleBackButton = (event: any) => {
       if (isSideMenuOpen) {
         dispatch(closeModal());
-        event.preventDefault(); // Prevent navigation
+        event.preventDefault();
       }
     };
   
@@ -72,17 +76,21 @@ const RestaurantLayout: React.FC<AppLayoutProps> = ({ restaurant }) => {
   }, [restaurant, setSpecificTheme]);
 
   useEffect(() => {
+    if (isLoggedIn && !didModeChange) {  
+      dispatch(setMode('edit'))
+    }
+  }, [isLoggedIn, dispatch]);
+
+  useEffect(() => {
     if (restaurant.userId && restaurant.id) {
       dispatch(fetchRestaurantLinks({ userId: restaurant.userId, restaurantId: restaurant.id }))
-      if (restaurant.activeMenuId) {
+      if (restaurant.activeMenuId && !menuId) {
         dispatch(fetchRestaurantMenu({ userId: restaurant.userId, restaurantId: restaurant.id, menuId: restaurant.activeMenuId }))
       }
     }
-  }, [dispatch, restaurant]);
+  }, [dispatch, restaurant, menuId]);
 
   const toggleDrawer = useCallback(() => {
-    console.log('lllll')
-    console.log(isSideMenuOpen);
     if (isSideMenuOpen) {
       dispatch(closeModal());
     } else {
@@ -99,7 +107,7 @@ const RestaurantLayout: React.FC<AppLayoutProps> = ({ restaurant }) => {
       case 'card':
         return <BusinessLayout pageValue={pageValue} restaurant={restaurant} />;
       default:
-        return <BusinessLayout pageValue={pageValue} restaurant={restaurant} />;
+        return <DefaultLayout pageValue={pageValue} restaurant={restaurant} />;
     }
   };
   
@@ -115,12 +123,7 @@ const RestaurantLayout: React.FC<AppLayoutProps> = ({ restaurant }) => {
         <Link
           href="https://contactdyn.com"
           target="_blank"
-          sx={{
-            textAlign: 'center',
-            display: 'block',
-            fontSize: '0.8rem',
-            padding: '16px'
-          }}
+          sx={classes.link}
         >
           Powered By CDYN
         </Link>

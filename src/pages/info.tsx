@@ -3,8 +3,6 @@ import React, {
   useState,
   useCallback,
   useContext,
-  lazy,
-  Suspense
 } from 'react';
 import _ from 'lodash';
 import { Box, Typography } from '@mui/material';
@@ -19,8 +17,7 @@ import SaveButton from '../layout/SaveButton';
 import { authSelector } from '../store/selectors/auth';
 import { restaurantSelector } from '../store/selectors/restaurant';
 import AppLayout from '../layout/AppLayout';
-
-const BasicInfoForm = lazy(() => import('../components/Restaurant/BasicInfoForm'));
+import BasicInfoForm from '../components/Restaurant/BasicInfoForm';
 
 const BasicInfo: React.FC = () => {
   const layoutClasses = useLayoutStyles()
@@ -40,6 +37,7 @@ const BasicInfo: React.FC = () => {
     defaultValues: {
       firstName: restaurant && restaurant.basicInfoData?.firstName ? restaurant.basicInfoData?.firstName : '',
       lastName: restaurant && restaurant.basicInfoData?.lastName ? restaurant.basicInfoData?.lastName : '',
+      slogan: restaurant && restaurant.basicInfoData?.slogan ? restaurant.basicInfoData?.slogan : '',
       email: restaurant && restaurant.basicInfoData?.email? restaurant.basicInfoData?.email : '',
       phone1: restaurant && restaurant.basicInfoData?.phone1 ? restaurant.basicInfoData?.phone1 : '',
       phone2: restaurant && restaurant.basicInfoData?.phone2 ? restaurant.basicInfoData?.phone2 : '',
@@ -53,6 +51,7 @@ const BasicInfo: React.FC = () => {
     if (restaurant) {
       setValue('firstName', restaurant.basicInfoData?.firstName || '');
       setValue('lastName', restaurant.basicInfoData?.lastName || '');
+      setValue('slogan', restaurant.basicInfoData?.slogan || '');
       setValue('email', restaurant.basicInfoData?.email || '');
       setValue('phone1', restaurant.basicInfoData?.phone1 || '');
       setValue('phone2', restaurant.basicInfoData?.phone2 || '');
@@ -74,7 +73,6 @@ const BasicInfo: React.FC = () => {
     if (!userId || !currentUser) {
       return;
     }
-    console.log(formData)
     formData.location = location
     dispatch(updateBasicInfo({userId, restaurantId: currentUser.activeRestaurantId, formData}));
   }, [userId, dispatch, currentUser, location]);
@@ -100,33 +98,19 @@ const BasicInfo: React.FC = () => {
     <AppLayout>
       <Box p={2}>
         <form onSubmit={handleSubmit(handleBasicInfoSubmit)}>
-          <Suspense
-            fallback={(
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexDirection="column"
-                p={2}  
-              >
-                <Typography align='center' variant='body1'>Loading...</Typography>
-              </Box>
-            )}
-          >
-            <BasicInfoForm
-              formStatedata={restaurant && restaurant?.basicInfoData ? restaurant?.basicInfoData : null}
-              location={location}
-              setLocation={setLocation}
-              loadingData={isLoading}
-              control={control}
-              register={register}
-              errors={errors}
-              setValue={setValue}
-              defaultData={null}
-              currentUser={currentUser}
-              currentAddress={currentAddress}
-            />
-          </Suspense>
+          <BasicInfoForm
+            formStatedata={restaurant && restaurant?.basicInfoData ? restaurant?.basicInfoData : null}
+            location={location}
+            setLocation={setLocation}
+            loadingData={isLoading}
+            control={control}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            defaultData={null}
+            currentUser={currentUser}
+            currentAddress={currentAddress}
+          />
           <Box
             sx={layoutClasses.stickyBottomBox}
             display="flex"

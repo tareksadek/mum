@@ -1,5 +1,11 @@
 {
   "projects": {
     "default": "muchmum-00"
+  },
+  "targets": {},
+  "etags": {
+    "muchmum-00": {
+      "extensionInstances": {}
+    }
   }
 }

@@ -110,7 +110,8 @@ const MenuSectionDialog: React.FC<MenuSectionDialogProps> = ({ section, setIsEdi
     const sectionData = {
       ...data,
       ...(section && section.id ? {} : { sortOrder: menu && menu.sections ? menu.sections.length : 0 }),
-      image: sectionImageData,
+      // image: sectionImageData, Activate if section image is needed
+      image: null,
     };
   
     if (userId && restaurantId && menuId) {
@@ -131,7 +132,7 @@ const MenuSectionDialog: React.FC<MenuSectionDialogProps> = ({ section, setIsEdi
         }
       }
     }
-  }, [dispatch, menu, menuId, restaurantId, userId, section, sectionImageData, editingMenu, closeDialog]);  
+  }, [dispatch, menu, menuId, restaurantId, userId, section, editingMenu, closeDialog]);  
 
   useEffect(() => {
     registerSubmit(() => handleSubmit(handleSectionSubmit)());
@@ -154,9 +155,6 @@ const MenuSectionDialog: React.FC<MenuSectionDialogProps> = ({ section, setIsEdi
       const cleanSectionData = _.omit(section, ['sortOrder', 'items', 'image', 'id']);
       const formChanged = !_.isEqual(cleanSectionData, watchedValues);
       const imageChanged = checkIfSectionImageChanged();
-
-      console.log(cleanSectionData)
-      console.log(watchedValues)
 
       setFormChanged(formChanged || imageChanged);
     }

@@ -7,6 +7,7 @@ import {
   fetchLinksSubcollection,
   updateRestaurantBasicInfo,
   updateRestaurantAboutInfo,
+  updateRestaurantWorkingDays,
   updateRestaurantCoverImage,
   updateRestaurantProfileImage,
   updateLinks,
@@ -17,6 +18,7 @@ import {
   RestaurantDataType,
   BasicInfoFormDataTypes,
   AboutFormDataTypes,
+  WorkingDaysForm,
   LinkType,
   ThemeSettingsType,
   ColorType,
@@ -26,7 +28,7 @@ import {
 } from '../../types/menu';
 import { startLoading, stopLoading } from './loadingCenter';
 import { setNotification } from './notificationCenter';
-import { addRestaurantToUser, setActiveRestaurant } from './user';
+import { addRestaurantToUser, updateActiveRestaurant } from './user';
 
 interface RestaurantState {
   restaurant: RestaurantDataType | null;
@@ -66,7 +68,7 @@ export const saveRestaurant = createAsyncThunk(
           createdOn: restaurantData.createdOn,
         };
         dispatch(addRestaurantToUser({restaurantId: response.restaurant.id, restaurantTitle: response.restaurant.title}))
-        dispatch(setActiveRestaurant(response.restaurant.id))
+        dispatch(updateActiveRestaurant({userId ,activeRestaurantId: response.restaurant.id}))
         dispatch(stopLoading())
         return sanitizedRestaurantData;
       } else {
@@ -106,7 +108,6 @@ export const getRestaurantById = createAsyncThunk<RestaurantDataType, { userId: 
         restaurantData.createdOn = formatISO(jsDateCreatedOn);
       }
       dispatch(fetchRestaurantLinks({ userId, restaurantId }));
-      console.log('restaurant data existed from ssr')
       return restaurantData;
     }
 
@@ -149,8 +150,6 @@ export const updateBasicInfo = createAsyncThunk(
   ) => {
     try {
       const response = await updateRestaurantBasicInfo(userId, restaurantId, formData);
-      console.log('xxx')
-      console.log(response)
       if (response.success) {
         dispatch(setNotification({ message: 'Changes Saved', type: 'success', horizontal: 'center', vertical: 'bottom' }));
         return formData;
@@ -173,6 +172,23 @@ export const updateAboutInfo = createAsyncThunk(
         return formData;
       } else {
         return rejectWithValue('Failed to update about info');
+      }
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+export const updateWorkingDays = createAsyncThunk(
+  'restaurant/updateWorkingDays',
+  async ({ userId, restaurantId, workingDays }: { userId: string; restaurantId: string; workingDays: WorkingDaysForm }, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await updateRestaurantWorkingDays(userId, restaurantId, workingDays);
+      if (response.success) {
+        dispatch(setNotification({ message: 'Changes Saved', type: 'success', horizontal: 'center', vertical: 'bottom' }));
+        return workingDays;
+      } else {
+        return rejectWithValue('Failed to update Working Days');
       }
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -360,7 +376,6 @@ export const restaurantSlice = createSlice({
       })
       .addCase(updateBasicInfo.fulfilled, (state, action: PayloadAction<BasicInfoFormDataTypes>) => {
         if (state.restaurant) {
-          console.log('ful')
           state.restaurant.basicInfoData = action.payload;
         }
         state.loading = false;
@@ -384,6 +399,23 @@ export const restaurantSlice = createSlice({
         state.error = null;
       })
       .addCase(updateAboutInfo.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(updateWorkingDays.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateWorkingDays.fulfilled, (state, action) => {
+        state.loading = false;
+        state.restaurant = {
+          ...state.restaurant,
+          workingDays: action.payload,
+        };
+        state.error = null;
+      })
+      .addCase(updateWorkingDays.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

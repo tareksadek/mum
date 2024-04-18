@@ -4,8 +4,6 @@ import React, {
   useContext,
   useCallback,
   useRef,
-  lazy,
-  Suspense
 } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,9 +17,8 @@ import { useLayoutStyles } from '../theme/layout';
 import { authSelector } from '../store/selectors/auth';
 import { restaurantSelector } from '../store/selectors/restaurant';
 import AppLayout from '../layout/AppLayout';
-
-const ProfileImageProcessor = lazy(() => import('../components/Restaurant/ProfileImageProcessor'));
-const CoverImageProcessor = lazy(() => import('../components/Restaurant/CoverImageProcessor'));
+import ProfileImageProcessor from '../components/Restaurant/ProfileImageProcessor';
+import CoverImageProcessor from '../components/Restaurant/CoverImageProcessor';
 
 const Images: React.FC = () => {
   const layoutClasses = useLayoutStyles()
@@ -90,8 +87,6 @@ const Images: React.FC = () => {
     }
   }, [restaurant]);
 
-  console.log(restaurant)
-
   useEffect(() => {
     registerSubmit(handleImagesSubmit);
   }, [registerSubmit, handleImagesSubmit]);
@@ -107,56 +102,28 @@ const Images: React.FC = () => {
     <AppLayout>
       <Box p={2}>
         <Box pb={2}>
-          <Typography variant="h4" align="center">Profile Picture</Typography>
-          <Suspense
-            fallback={(
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexDirection="column"
-                p={2}  
-              >
-                <Typography align='center' variant='body1'>Loading...</Typography>
-              </Box>
-            )}
-          >
-            <ProfileImageProcessor
-              isLoading={isLoading}
-              data={profileImageData}
-              setData={setProfileImageData}
-              cropWidth={profileImageDimensions.width}
-              cropHeight={profileImageDimensions.height}
-              createBase64={true}
-            />
-          </Suspense>
+          <Typography variant="h4" align="center">Restaurant Logo</Typography>
+          <ProfileImageProcessor
+            isLoading={isLoading}
+            data={profileImageData}
+            setData={setProfileImageData}
+            cropWidth={profileImageDimensions.width}
+            cropHeight={profileImageDimensions.height}
+            createBase64={true}
+          />
         </Box>
 
         {/* {currentUser && !currentUser.isTeamMember && appSetup && appSetup.coverImageData && !appSetup.coverImageData.url && !user?.isTeamMaster && ( */}
           <Box mt={2} mb={2}>
             <Typography variant="h4" align="center">Cover Photo</Typography>
-            <Suspense
-              fallback={(
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flexDirection="column"
-                  p={2}  
-                >
-                  <Typography align='center' variant='body1'>Loading...</Typography>
-                </Box>
-              )}
-            >
-              <CoverImageProcessor
-                isLoading={isLoading}
-                data={coverImageData}
-                setData={setCoverImageData}
-                cropWidth={coverImageDimensions.width}
-                cropHeight={coverImageDimensions.height}
-                createBase64={false}
-              />
-            </Suspense>
+            <CoverImageProcessor
+              isLoading={isLoading}
+              data={coverImageData}
+              setData={setCoverImageData}
+              cropWidth={coverImageDimensions.width}
+              cropHeight={coverImageDimensions.height}
+              createBase64={false}
+            />
           </Box>
         {/* )} */}
 

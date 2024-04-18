@@ -59,12 +59,16 @@ const GoogleMapDisplay: React.FC<GoogleMapDisplayProps> = ({ lat, lng }) => {
       sx={classes.staticMapContainer}
       onClick={() => setShowInteractiveMap(true)}
     >
-      <Image
+      {/* <Image
         src={staticMapURL}
         alt="Location Map"
         loading="lazy"
         width={550}
         height={275}
+      /> */}
+      <img
+        src={staticMapURL}
+        alt="Location Map"
       />
     </Box>
   );

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './';
 import {
   createMenu,
+  editMenu,
   createMenuSection,
   createMenuItem,
   editMenuSection,
@@ -67,6 +68,30 @@ export const createRestaurantMenu = createAsyncThunk<MenuType | undefined, { use
     } else {
       dispatch(stopLoading());
       return rejectWithValue("Error: Menu data not available");
+    }
+  }
+);
+
+export const editRestaurantMenu = createAsyncThunk<MenuType | undefined, { userId: string; restaurantId: string; menuId: string; menuData: MenuType }, { rejectWithValue: Function, state: RootState }>(
+  'restaurant/editMenu',
+  async (
+    { userId, restaurantId, menuId, menuData },
+    { rejectWithValue, dispatch }
+  ) => {
+    dispatch(startLoading('Editing menu...'));
+    try {
+      const response = await editMenu(userId, restaurantId, menuId, menuData);
+
+      if (response.success && response.data) {
+        dispatch(stopLoading());
+        return response.data;
+      } else {
+        dispatch(stopLoading());
+        return rejectWithValue(response.error);
+      }
+    } catch (error) {
+      dispatch(stopLoading());
+      return rejectWithValue((error as Error).message);
     }
   }
 );
@@ -376,6 +401,25 @@ export const menuSlice = createSlice({
       });
 
     builder
+      .addCase(editRestaurantMenu.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(editRestaurantMenu.fulfilled, (state, action: PayloadAction<MenuType | undefined>) => {
+        state.loading = false;
+        if (action.payload && state.menu) {
+          state.menu.currency = action.payload.currency;
+          state.menu.isActive = action.payload.isActive;
+          state.menu.name = action.payload.name;
+          state.error = null;
+        }
+      })
+      .addCase(editRestaurantMenu.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+
+    builder
       .addCase(createRestaurantMenuSection.pending, (state) => {
         state.loading = true;
       })
@@ -448,8 +492,6 @@ export const menuSlice = createSlice({
       .addCase(editRestaurantMenuItem.fulfilled, (state, action: PayloadAction<MenuItemType>) => {
         // Locate the section and then the item to update
         const sectionIndex = state.menu?.sections?.findIndex(section => section.id === action.payload.sectionId);
-        console.log(action.payload.sectionId)
-        console.log(sectionIndex)
         if (state.menu && sectionIndex !== undefined && sectionIndex >= 0) {
           // Asserting the existence of `sections` array with non-null assertion operator (!)
           const items = state.menu.sections![sectionIndex].items!;

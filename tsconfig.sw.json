@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "ES6",  // Changed from "none" to "ES6"
+    "moduleResolution": "node",  // Ensure module resolution is set
+    "lib": ["ES2018", "WebWorker"],
+    "noEmitOnError": true,
+    "outDir": "public",
+    "strict": true
+  },
+  "include": ["./public/service-worker.ts"],
+  "exclude": []
+}

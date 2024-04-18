@@ -17,7 +17,42 @@ export const useAppStyles = () => {
     },
   };
 
-  return { mainBox, contentContainer };
+  const link = {
+    color: theme.palette.background.link,
+    textAlign: 'center',
+    display: 'block',
+    fontSize: '0.8rem',
+    padding: theme.spacing(2)
+  }
+
+  const landingPageContainer = {}
+
+  const landingPageLogoContainer = {
+    '& svg': {
+      color: theme.palette.background.reverse,
+      fontSize: 60,
+    }
+  }
+
+  const translateContainer = { 
+    backgroundColor: '#fff',
+    borderRadius: theme.spacing(1),
+    '& .goog-te-gadget': {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      '& .goog-te-gadget-simple': {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: 'none',
+        width: '100%',
+      }
+    }
+  }
+
+  return { mainBox, contentContainer, link, landingPageContainer, landingPageLogoContainer, translateContainer };
 };
 
 export const useAppHeaderStyles = () => {
@@ -29,6 +64,9 @@ export const useAppHeaderStyles = () => {
     '& svg': {
       fontSize: '1.5rem',
     },
+    '&:hover': {
+      backgroundColor: theme.palette.background.default,
+    }
   };
   const profileAppBar = {
     backgroundColor: 'transparent !important',
@@ -95,7 +133,24 @@ export const useAppHeaderStyles = () => {
     },
   };
 
-  return { appBarRoot, appBarButtons, profileAppBar, offlineChip };
+  const modeButton = {
+    '&.MuiButton-contained': {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.background.headerButtons,
+      height: 40,
+      width: 90,
+      borderRadius: 100,
+      textTransform: 'initial',
+      '& svg': {
+        fontSize: '1.5rem',
+      },
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+      }
+    }
+  }
+
+  return { appBarRoot, appBarButtons, profileAppBar, offlineChip, modeButton };
 };
 
 export const useSaveButtonStyles = () => {
@@ -259,7 +314,7 @@ export const useSideMenuStyles = () => {
   };
 };
 
-export const useSBottomNavStyles = () => {
+export const useBottomNavStyles = (selectedColor: string | null) => {
   const theme = useTheme();
 
   const navContainer = {
@@ -269,27 +324,33 @@ export const useSBottomNavStyles = () => {
     left: 0,
     right: 0,
     margin: 'auto',
-    boxShadow: '0 0px 8px #bbb',
-    borderRadius: `${theme.spacing(2)} ${theme.spacing(2)} 0 0`
+    borderRadius: `${theme.spacing(2)} ${theme.spacing(2)} 0 0`,
+    zIndex: 2,
   }
 
   const bottomNavigation = {
-    backgroundColor: theme.palette.background.reverse,
+    backgroundColor: theme.palette.background.panel,
     borderRadius: `${theme.spacing(2)} ${theme.spacing(2)} 0 0`,
     '& button': {
       '&.MuiButtonBase-root': {
-        color: theme.palette.background.default,
+        color: theme.palette.background.reverse,
         '&.Mui-selected': {
-          color: theme.palette.background.green
+          color: selectedColor || theme.palette.background.blue
         }
       }
     }
   }
 
   const menuButton = {
+    color: '#fff',
     '& .MuiBottomNavigationAction-label': {
       position: 'absolute',
       bottom: theme.spacing(1)
+    },
+    '&.Mui-selected': {
+      '& .MuiSvgIcon-root': {
+        color: '#fff'
+      },
     }
   }
 
@@ -300,10 +361,14 @@ export const useSBottomNavStyles = () => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.palette.background.reverse,
+    backgroundColor: selectedColor || theme.palette.background.blue,
     border:`4px solid ${theme.palette.background.default}`,
     borderRadius: '50%',
-    top: -30
+    top: -30,
+    '& svg': {
+      color: '#fff',
+      fontSize: 28,
+    }
   }
 
   return { navContainer, bottomNavigation, menuButton, menuButtonIcon };

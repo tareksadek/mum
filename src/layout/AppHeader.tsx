@@ -4,22 +4,18 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Button,
   Slide,
   Chip
 } from "@mui/material";
-import { MenuIcon, QrIcon, Logo } from './CustomIcons';
+import { MenuIcon, Logo } from './CustomIcons';
 import { useRouter } from 'next/router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import SignalWifiConnectedNoInternet4Icon from '@mui/icons-material/SignalWifiConnectedNoInternet4';
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import { useSubmit, SubmitContext } from '../contexts/SubmitContext';
 import HomeIcon from '@mui/icons-material/Home';
 import { useAppHeaderStyles } from './appStyles';
 import { useConnectivity } from '../contexts/ConnectivityContext';
 import { authSelector } from '../store/selectors/auth';
-import { AppDispatch } from '../store/reducers';
-import { openModal } from '../store/reducers/modal';
 
 type AppHeaderProps = {
   userUrlSuffix: string | null;
@@ -49,13 +45,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   onMenuButtonClick,
 }) => {
   const classes = useAppHeaderStyles()
-  const submit = useSubmit();
-  const context = useContext(SubmitContext);
-  if (!context) throw new Error('Context not available');
-  const { formChanged, formValid } = context;
   const connectivity = useConnectivity();
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
 
   const { isAdmin } = useSelector(authSelector);
 
@@ -80,6 +71,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         return "Create Card";
       case "/info":
         return "Info";
+      case "/hours":
+        return "Working Hours";
+      case "/menus":
+        return "Menu";
       case "/masterInfo":
         return "Info";
       case "/about":
@@ -108,6 +103,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         return "Card Share";
       case "/qrcode":
         return "QR Code";
+      case "/qrCode":
+        return "QR Code";
       case "/redirect":
         return "Card Redirect";
       case "/adminDashboard":
@@ -135,18 +132,12 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 
   const currentTitle = getTitleFromPathname(router.pathname);
 
-  const shouldShowSaveButton = (pathname: string) => {
-    // const pagesWithSaveButton = ["/info", "/about", "/theme", "/images", "/links", "/contactForm", "/redirect"];
-    const pagesWithSaveButton = ["/dummyPage"]
-    return pagesWithSaveButton.includes(pathname);
-  };
-
   const onBackClick = () => {    
-      if (isAdmin) {
-        router.push('/AdminDashboard');
-      } else {
-        router.push(`/${userUrlSuffix}`);
-      }
+    if (isAdmin) {
+      router.push('/AdminDashboard');
+    } else {
+      router.push(`/${userUrlSuffix}`);
+    }
   };
 
   const goToLogin = () => {
@@ -156,10 +147,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       router.push('/Login')
     }
   }
-
-  const handleQrClick = () => {
-    dispatch(openModal('qr'));
-  };
 
   const handleOfflineChipClick = () => {
     alert("You're offline right now. No worries! You can still use the app, but be aware that some data might not be up-to-date and a few features require an online connection. We'll sync everything once you're back online!")
@@ -212,30 +199,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 sx={classes.offlineChip}
                 onClick={handleOfflineChipClick}
               />
-            )}
-
-            {isAdminDashboardPage ? (
-              <IconButton
-                edge="end"
-                aria-label="qr-code"
-                style={{
-                  marginLeft: 'auto',
-                  marginRight: 0,
-                  visibility: isAdminDashboardPage ? 'hidden' : 'visible',
-                }}
-                onClick={handleQrClick}
-                sx={classes.appBarButtons}
-              >
-                <QrIcon />
-              </IconButton>
-            ) : shouldShowSaveButton(router.pathname) && (
-              <Button
-                color="inherit"
-                onClick={submit}
-                disabled={!formChanged || !formValid}
-              >
-                Save
-              </Button>
             )}
 
             {isLoggedIn && (

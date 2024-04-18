@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { format } from 'date-fns';
 import { UserType } from '../../types/user';
 import { RestaurantDataType } from '../../types/restaurant';
-import { getUserByRestaurantSuffix, getUserById } from '../../API/user';
+import { getUserByRestaurantSuffix, getUserById, updateActiveRestaurantId } from '../../API/user';
 import { startLoading, stopLoading } from './loadingCenter';
 import { getRestaurantById } from './restaurant';
 import { RootState } from '.';
@@ -26,7 +26,6 @@ const initialState: {
 export const fetchUser = createAsyncThunk<UserType, string, { rejectWithValue: Function, state: RootState }>(
   'user/fetchUser',
   async (userId: string, { rejectWithValue, getState, dispatch }) => {
-    console.log('ppppp')
     dispatch(startLoading('Bringing your card to life...'));
     try {
       const response: ResponseType<UserType> = await getUserById(userId) as ResponseType<UserType>;
@@ -38,13 +37,9 @@ export const fetchUser = createAsyncThunk<UserType, string, { rejectWithValue: F
           createdOn: response.data.createdOn ? format(new Date(response.data.createdOn), 'yyyy-MMM-dd') : null,
           lastLogin: response.data.lastLogin ? format(new Date(response.data.lastLogin), 'yyyy-MMM-dd') : null,
           redirect: appSetup?.redirect ? appSetup.redirect : response.data.redirect
-        };
-
-        console.log(formattedData);
-        
+        };        
 
         if (formattedData.activeRestaurantId) {
-          console.log('fetching restaurant action');
           dispatch(getRestaurantById({userId, restaurantId: formattedData.activeRestaurantId}));
         }
 
@@ -82,7 +77,6 @@ export const fetchUserByRestaurantSuffix = createAsyncThunk<UserType,
       if (userData.activeRestaurantId) {
         dispatch(getRestaurantById({userId: userData.id, restaurantId: userData.activeRestaurantId, restaurantData}));
       }
-      console.log('user data existed from ssr')
 
       return userData;
     } else {
@@ -115,6 +109,28 @@ export const fetchUserByRestaurantSuffix = createAsyncThunk<UserType,
   }
 );
 
+export const updateActiveRestaurant = createAsyncThunk(
+  'user/updateActiveRestaurant',
+  async (
+    { userId, activeRestaurantId }: {
+      userId: string;
+      activeRestaurantId: string
+    },
+    { rejectWithValue, dispatch }
+  ) => {
+    try {
+      const response = await updateActiveRestaurantId(userId, activeRestaurantId);
+      if (response.success) {
+        return activeRestaurantId;
+      } else {
+        return rejectWithValue('Failed to update active restaurant');
+      }
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
 
 // export const redirectUser = createAsyncThunk('user/redirectUser', async ({ userId, redirectData }, { rejectWithValue }) => {
 //   try {
@@ -136,10 +152,10 @@ const userSlice = createSlice({
       if (!state.user || !state.user.restaurantList) return;
       state.user.restaurantList.push(action.payload);
     },
-    setActiveRestaurant: (state, action) => {
-      if (!state.user) return;
-      state.user.activeRestaurantId = action.payload.restaurantId;
-    },
+    // setActiveRestaurant: (state, action) => {
+    //   if (!state.user) return;
+    //   state.user.activeRestaurantId = action.payload.restaurantId;
+    // },
   },
   extraReducers: (builder) => {
     builder
@@ -170,6 +186,22 @@ const userSlice = createSlice({
         state.error = action.payload as string || 'An error occurred';
       })
 
+      builder
+        .addCase(updateActiveRestaurant.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(updateActiveRestaurant.fulfilled, (state, action) => {
+          if (state.user) {
+            state.user.activeRestaurantId = action.payload;
+          }
+          state.loading = false;
+          state.error = null;
+        })
+        .addCase(updateActiveRestaurant.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload as string;
+        });
+
     // builder
     //   .addCase(redirectUser.pending, (state) => {
     //     state.loading = true;
@@ -187,5 +219,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateUser, addRestaurantToUser, setActiveRestaurant } = userSlice.actions;
+export const { updateUser, addRestaurantToUser } = userSlice.actions;
 export default userSlice.reducer;

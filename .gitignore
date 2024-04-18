@@ -12,13 +12,16 @@
 firebase.json
 firestore.rules
 firestore.indexes.json
+storage.rules
 
 # testing
 /coverage
 
 # next.js
 /.next/
+/.firebase/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -41,7 +44,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+tsconfig.json
+tsconfig.sw.json
 
 # lint
 eslintrc.json
+.eslintignore
+
+
+

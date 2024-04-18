@@ -4,8 +4,6 @@ import React, {
   useContext,
   useCallback,
   useRef,
-  lazy,
-  Suspense
 } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,8 +17,7 @@ import SaveButton from '../layout/SaveButton';
 import { authSelector } from '../store/selectors/auth';
 import { restaurantSelector } from '../store/selectors/restaurant';
 import AppLayout from '../layout/AppLayout';
-
-const LinksCreator = lazy(() => import('../components/Restaurant/LinksCreator'));
+import LinksCreator from '../components/Restaurant/LinksCreator';
 
 const Links: React.FC = () => {
   const layoutClasses = useLayoutStyles()
@@ -76,36 +73,22 @@ const Links: React.FC = () => {
   return (
     <AppLayout>
       <Box p={2}>
-        <Suspense
-          fallback={(
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              flexDirection="column"
-              p={2}  
-            >
-              <Typography align='center' variant='body1'>Loading...</Typography>
-            </Box>
-          )}
+        <LinksCreator
+          setLinks={setLinks}
+          links={links}
+        />
+        <Box
+          sx={layoutClasses.stickyBottomBox}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
         >
-          <LinksCreator
-            setLinks={setLinks}
-            links={links}
+          <SaveButton
+            onClick={handleLinksSubmit}
+            text = "Save"
+            disabled={!formValid || !formChanged}
           />
-        </Suspense>
-          <Box
-            sx={layoutClasses.stickyBottomBox}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <SaveButton
-              onClick={handleLinksSubmit}
-              text = "Save"
-              disabled={!formValid || !formChanged}
-            />
-          </Box>
+        </Box>
       </Box>
     </AppLayout>
   );

@@ -206,6 +206,50 @@ export const useMapStyles = () => {
   return { staticMapContainer };
 };
 
+export const useWorkingDaysStyles = () => {
+  const theme = useTheme();
+
+  const accordionContainer = {
+    position: 'relative',
+    '& img': {
+      maxWidth: 550,
+      width: '100%',
+      height: 'auto',
+    },
+  };
+
+  const accordionSummary = {
+    backgroundColor: theme.palette.background.listItem,
+    borderRadius: theme.spacing(0.5),
+    padding: theme.spacing(1),
+    marginBottom: 0,
+    '&:last-child': {
+      marginBottom: 0
+    },
+    '& .MuiAccordionSummary-content': {
+      padding: 0,
+      margin: 0,
+      '&.Mui-expanded': {
+        margin: 0,
+      },
+      '& label': {
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginLeft: 0
+      },
+    },
+  }
+
+  const accordionDetails = {
+    borderTop: 'none',
+    borderBottomLeftRadius: theme.spacing(0.5),
+    borderBottomRightRadius: theme.spacing(0.5),
+  }
+
+  return { accordionContainer, accordionSummary, accordionDetails };
+};
+
 type IconCircleProps = {
   bgColor?: string;
 };

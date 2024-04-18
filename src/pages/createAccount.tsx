@@ -5,13 +5,15 @@ import Image from 'next/image';
 import { getAuth, createUserWithEmailAndPassword, User } from '@firebase/auth';
 import { Timestamp } from '@firebase/firestore';
 import { useForm } from 'react-hook-form';
-import { Button, TextField, Container, Typography, Box, Alert } from '@mui/material';
+import { Button, TextField, Typography, Box, Alert } from '@mui/material';
 import { createUserDocument, doesUserWithProfileSuffixExist } from '../API/user';
 import { AppDispatch } from '../store/reducers';
 import { generateRandomString, cleanString } from '../utilities/utils';
 import { appDomainView } from '../setup/setup';
 import GuestRoute from '../hoc/GuestRoute';
 import RestaurantURL from '../components/CreateAccount/RestaurantURL';
+import AppContentContainer from '../layout/AppContentContainer';
+import SimpleBackdrop from '../components/Loading/SimpleBackdrop';
 
 const CreateAccount: React.FC = () => {
   const router = useRouter();
@@ -19,6 +21,7 @@ const CreateAccount: React.FC = () => {
   // const { setup, loadingSetup } = useSelector(selectSetup);
 
   const [suffixError, setSuffixError] = useState(false)
+  const [creatingUser, setCreatingUser] = useState(false)
 
   const { register, handleSubmit, watch, formState: { errors, isValid } } = useForm({
     mode: 'onBlur',
@@ -40,6 +43,7 @@ const CreateAccount: React.FC = () => {
     lastName: string,
     loginMethod: string
   ) => {
+    setCreatingUser(true)
     const docData = {
       accountSecret: generateRandomString(),
       createdOn: Timestamp.now().toDate(),
@@ -60,9 +64,11 @@ const CreateAccount: React.FC = () => {
     };
     const response = await createUserDocument(user.uid, docData);
     if (response.success) {
-      router.push('/CreateRestaurant');
+      setCreatingUser(false)
+      router.push('/createRestaurant');
     } else {
       console.error("Error creating document:", response.error);
+      setCreatingUser(false)
     }
   }
 
@@ -87,30 +93,42 @@ const CreateAccount: React.FC = () => {
     }
   };
 
-  const profileUrl = `${appDomainView}/${watchedFirstName ? cleanString(watchedFirstName.trim().toLowerCase()) : 'Restaurant Name'}${watchedLastName ? `_${cleanString(watchedLastName.trim().toLowerCase())}` : ''}`;
+  const profileUrl = `${appDomainView}/${watchedFirstName ? cleanString(watchedFirstName.trim().toLowerCase()) : 'Restaurant Name'}${watchedLastName ? `_${cleanString(watchedLastName.trim().toLowerCase())}` : '_Restaurant Slug'}`;
 
   return (
     <GuestRoute>
-      <Container>
+      <AppContentContainer>
+        {creatingUser && (
+          <SimpleBackdrop />
+        )}
         <Box pt={2}>
-          <Typography variant="h3" align="center">Welcome to Contact Dynamics</Typography>
+          <Typography variant="h3" align="center">Welcome to MuchMum</Typography>
           <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
             flexDirection="column"
             mt={2}
-            mb={2}
+            mb={4}
           >
-            <Image
+            {/* <Image
               src="/images/welcome.svg"
               alt="Welcome to MuchMuM"
               priority
               width={256}
               height={229}
+            /> */}
+            <img
+              src="/images/welcome.svg"
+              alt="Welcome to MuchMuM"
+              style={{
+                width: 256,
+                height: 229,
+                objectFit: 'cover',
+              }}
             />
           </Box>
-          <Typography variant="h4" align="center">Create Account</Typography>
+          <Typography variant="h4" align="center">Create Your Account</Typography>
           {suffixError && (
             <Box mt={2}>
               <Alert severity="warning">
@@ -120,73 +138,75 @@ const CreateAccount: React.FC = () => {
               </Alert>
             </Box>
           )}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField
-              {...register("firstName", { required: "Restaurant name is required" })}
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              label="Restaurant Name*"
-            />
-            <Typography color="error">
-              {typeof errors.firstName?.message === 'string' ? errors.firstName.message : null}
-            </Typography>
+          <Box pl={2} pr={2}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <TextField
+                {...register("firstName", { required: "Restaurant name is required" })}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                label="Restaurant Name*"
+              />
+              <Typography color="error">
+                {typeof errors.firstName?.message === 'string' ? errors.firstName.message : null}
+              </Typography>
 
-            <TextField
-              {...register("lastName")}
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              label="Restaurant Name Slug"
-            />
+              <TextField
+                {...register("lastName")}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                label="Restaurant Slug"
+              />
 
-            <RestaurantURL profileUrl={profileUrl} />
+              <RestaurantURL profileUrl={profileUrl} />
 
-            <TextField
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "Invalid email format"
-                }
-              })}
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              label="Email Address"
-              type="email"
-            />
-            <Typography color="error">
-              {typeof errors.email?.message === 'string' ? errors.email.message : null}
-            </Typography>
+              <TextField
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                    message: "Invalid email format"
+                  }
+                })}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                label="Email Address"
+                type="email"
+              />
+              <Typography color="error">
+                {typeof errors.email?.message === 'string' ? errors.email.message : null}
+              </Typography>
 
-            <TextField
-              {...register("password", {
-                required: "Password is required",
-                minLength: { value: 6, message: "Password must be at least 6 characters long" }
-              })}
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              label="Password"
-              type="password"
-            />
-            <Typography color="error">
-              {typeof errors.password?.message === 'string' ? errors.password.message : null}
-            </Typography>
+              <TextField
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "Password must be at least 6 characters long" }
+                })}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                label="Password"
+                type="password"
+              />
+              <Typography color="error">
+                {typeof errors.password?.message === 'string' ? errors.password.message : null}
+              </Typography>
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              disabled={!isValid}
-            >
-              Sign Up
-            </Button>
-          </form>       
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={!isValid}
+              >
+                Create Account
+              </Button>
+            </form>    
+          </Box>   
         </Box>
-      </Container>
+      </AppContentContainer>
     </GuestRoute>
   );
 }

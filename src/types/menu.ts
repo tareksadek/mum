@@ -56,6 +56,7 @@ export type MenuType = {
   description?: string;
   sections?: MenuSectionType[];
   isActive?: boolean;
+  currency?: string;
 };
 
 export type MenuFilterType = {

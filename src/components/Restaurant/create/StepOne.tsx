@@ -35,6 +35,7 @@ const StepOne: React.FC<StepOneProps> = ({
     defaultValues: {
       firstName: formStatedata?.firstName || (currentUser ? currentUser?.firstName : ''),
       lastName: formStatedata?.lastName || (currentUser ? currentUser?.lastName : ''),
+      slogan: formStatedata?.slogan || '',
       email: formStatedata?.email || (currentUser ? currentUser?.loginEmail : ''),
       phone1: formStatedata?.phone1 || '',
       phone2: formStatedata?.phone2 || '',

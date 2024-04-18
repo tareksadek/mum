@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { LinearProgress, Typography, Box } from '@mui/material';
+import { LinearProgress, Typography, Box, CircularProgress } from '@mui/material';
 import {
   BackdropStyled,
   LoadingBoxStyled,
@@ -18,6 +18,7 @@ interface LoadingBackdropProps {
   done?: boolean;
   boxed?: boolean;
   cubed?: boolean;
+  simple?: boolean;
   onComplete?: () => void;
   message?: string;
 }
@@ -29,6 +30,7 @@ const LoadingBackdrop: React.FC<LoadingBackdropProps> = ({
   done = false,
   boxed = false,
   cubed = false,
+  simple = false,
   onComplete,
   message,
 }) => {
@@ -99,6 +101,26 @@ const LoadingBackdrop: React.FC<LoadingBackdropProps> = ({
           </Box>
           <Typography variant="body1" align="center" sx={classes.loading}>{message || currentLoadingMessage}</Typography>
         </Box>
+      </Box>
+    )
+  }
+
+  if (simple) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          background: 'rgba(0, 0, 0, 0.5)',
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: '100%',
+          heigh: '100vh'
+        }}
+      >
+        <CircularProgress sx={{ color: '#fff' }} />
       </Box>
     )
   }

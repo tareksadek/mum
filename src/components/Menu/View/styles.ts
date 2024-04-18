@@ -1,5 +1,27 @@
 import { useTheme } from '@mui/material/styles';
 
+export const useMenuContainerStyles = (selectedColor: string | null) => {
+  const theme = useTheme();
+
+  const filterButton = {
+    '&.MuiButton-contained': {
+      background: 'transparent !important',
+      color: theme.palette.background.reverse,
+      padding: theme.spacing(1),
+      border: 'none',
+      boxShadow: '0 0 0 transparent',
+      textTransform: 'none',
+      '& svg': {
+        color: selectedColor || theme.palette.background.reverse,
+      }
+    }
+  }
+
+  return { 
+    filterButton
+  };
+};
+
 export const useMenuSectionStyles = () => {
   const theme = useTheme();
 
@@ -10,10 +32,12 @@ export const useMenuSectionStyles = () => {
 
   const accordionSummary = {
     backgroundColor: theme.palette.background.listItem,
-    border: `1px solid ${theme.palette.background.listItemBorder}`,
+    // border: `1px solid ${theme.palette.background.listItemBorder}`,
+    border: 'none',
     borderRadius: theme.spacing(0.5),
     padding: theme.spacing(1),
     marginBottom: 0,
+    fontWeight: 600,
     '&:last-child': {
       marginBottom: 0
     },
@@ -37,11 +61,11 @@ export const useMenuSectionStyles = () => {
   }
 
   const accordionDetails = {
-    border: `1px solid ${theme.palette.background.listItemBorder}`,
+    // border: `1px solid ${theme.palette.background.listItemBorder}`,
     borderTop: 'none',
     borderBottomLeftRadius: theme.spacing(0.5),
     borderBottomRightRadius: theme.spacing(0.5),
-    display: 'none'
+    display: 'none',
   }
 
   const accordionActions = {
@@ -139,7 +163,7 @@ export const useMenuItemStyles = () => {
 
   const menuItemContainer = {
     backgroundColor: theme.palette.background.default,
-    border: `1px solid ${theme.palette.background.listItemBorder}`,
+    // border: `1px solid ${theme.palette.background.listItemBorder}`,
     borderRadius: theme.spacing(0.5),
   }
 
@@ -162,6 +186,20 @@ export const useMenuItemStyles = () => {
     color: theme.palette.background.listItemIconButton
   };
 
+  const newPrice = {
+    fontWeight: 600,
+    fontSize: '1.1rem',
+  }
+
+  const oldPrice = {
+    textDecoration: 'line-through',
+    opacity: 0.7
+  }
+
+  const itemDescription = {
+    opacity: 0.7
+  }
+
   return { 
     filterSectionsContainer, 
     menuItemContainer,
@@ -169,6 +207,9 @@ export const useMenuItemStyles = () => {
     inactiveChip,
     activeChip,
     itemIconButton,
+    newPrice,
+    oldPrice,
+    itemDescription,
   };
 };
 
@@ -177,40 +218,12 @@ export const useItemDetailsStyles = () => {
 
   const imageSectionContainer = {
     position: 'relative',
-    '&::before': {
-      content:'""',
-      position: 'absolute',
-      width: '100%',
-      left: 0,
-      bottom: 0,
-      background: 'linear-gradient(0deg, rgba(0,0,0,1) 25%, rgba(255,255,255,0) 100%)',
-      zIndex: 1,
-      borderRadius: `0 0 ${theme.spacing(2)} ${theme.spacing(2)}`,
-      height: '30%',
-    }
-  }
-
-  const itemNameInImageSection = {
-    position: 'absolute',
-    width: '100%',
-    textAlign: 'center',
-    color: '#fff',
-    bottom: 0,
-    left: 0,
-    zIndex: 2,
-    '& p': {
-      color: '#fff',
-    },
-    '& h4': {
-      color: '#fff',
-    }
+    zIndex: 1,
   }
 
   const imageContainer = {
     maxWidth: 550,
     width: '100%',
-    height: 0,
-    paddingTop: '100%',
     position: 'relative',
     overflow: 'hidden',
     borderRadius: `0 0 ${theme.spacing(2)} ${theme.spacing(2)}`
@@ -222,10 +235,81 @@ export const useItemDetailsStyles = () => {
     },
   }
 
+  const itemDetailsContainer = {
+    backgroundColor: theme.palette.background.default,
+    borderTopLeftRadius: theme.spacing(2),
+    borderTopRightRadius: theme.spacing(2),
+    position: 'relative',
+    top: -32,
+    zIndex: 2,
+  }
+
+  const itemDescription = {
+    opacity: 0.75
+  }
+
+  const newPrice = {
+    fontWeight: 600,
+    fontSize: '1.1rem',
+  }
+
+  const oldPrice = {
+    textDecoration: 'line-through',
+  }
+
+  const itemTip = {
+    backgroundColor: theme.palette.background.panel,
+    borderRadius: theme.spacing(6),
+    padding: theme.spacing(1),
+    minHeight: 120,
+    width: 75,
+    '& p': {
+      fontSize: '0.8rem',
+      lineHeight: '1rem'
+    }
+  }
+
+  const ingredientChip = {
+    backgroundColor: 'transparent',
+    border: `1px solid ${theme.palette.background.link}`,
+    color: theme.palette.background.link
+  }
+
+  const itemTipIconContainer = { 
+    backgroundColor: theme.palette.background.default,
+    width: 55,
+    height: 55,
+    borderRadius: theme.spacing(10),
+  }
+
   return { 
+    itemDetailsContainer,
     imageSectionContainer,
     imageContainer,
-    itemNameInImageSection,
-    ingredientsContainer
+    ingredientsContainer,
+    newPrice,
+    oldPrice,
+    itemTip,
+    itemTipIconContainer,
+    itemDescription,
+    ingredientChip,
+  };
+};
+
+export const useFilterValueBoxStyles = (selectedColor: string | null) => {
+  const theme = useTheme();
+
+  const itemTipIconContainer = { 
+    backgroundColor: theme.palette.background.default,
+    width: 25,
+    height: 25,
+    borderRadius: theme.spacing(10),
+    '& svg': {
+      fontSize: 16
+    }
+  }
+
+  return { 
+    itemTipIconContainer
   };
 };

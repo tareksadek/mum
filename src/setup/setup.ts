@@ -11,6 +11,7 @@ export const defaults = {
   withImpact: true,
   withRewards: true,
   withDatabaseSetup: false,
+  withSectionImage: false,
 }
 export const main = {
   coverImageData: null,
@@ -94,6 +95,7 @@ export const firebaseConfig = {
 };
 export const vapidKey = process.env.REACT_APP_VAPID_KEY
 export const GOOGLE_MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS
+export const GOOGLE_TRANSLATE_KEY = process.env.NEXT_PUBLIC_TRANSLATE
 export const socialPlatforms = [
   /* eslint-disable object-curly-newline */
   // { platform: 'website', color: '#23cac2', iconColor: '#23cac2', key: 1, active: false },
@@ -142,45 +144,60 @@ export const profileImageDimensions = {
   width: 550,
   height: 550,
 }
-export const placeHolderProfileImage = '/assets/images/avatar.svg'
+export const placeHolderProfileImage = '/images/avatar.svg'
 export const defaultMenu = [
   {
-    title: 'restaurant',
+    title: null,
+    links: [
+      { linkfor: 'menu', path: '/menus' },
+    ],
+  },
+  {
+    title: null,
     links: [
       { linkfor: 'basic info', path: '/info' },
+    ],
+  },
+  {
+    title: null,
+    links: [
       { linkfor: 'about info', path: '/about' },
-      { linkfor: 'images', path: '/images' },
+    ],
+  },
+  {
+    title: null,
+    links: [
+      { linkfor: 'working hours', path: '/hours' },
+    ],
+  },
+  {
+    title: null,
+    links: [
       { linkfor: 'links', path: '/links' },
+    ],
+  },
+  {
+    title: null,
+    links: [
+      { linkfor: 'images', path: '/images' },
+    ],
+  },
+  {
+    title: null,
+    links: [
       { linkfor: 'theme', path: '/theme' },
-      { linkfor: 'hours', path: '/hours' },
     ],
   },
+  // {
+  //   title: null,
+  //   links: [
+  //     { linkfor: 'contacts', path: '/contacts' },
+  //   ],
+  // },
   {
-    title: 'menu',
+    title: null,
     links: [
-      { linkfor: 'menus', path: '/menus' },
-    ],
-  },
-  {
-    title: 'contacts',
-    links: [
-      { linkfor: 'contacts', path: '/contacts' },
-      { linkfor: 'contactForm', path: '/contactForm' },
-    ],
-  },
-  {
-    title: 'utilities',
-    links: [
-      { linkfor: 'qrcode', path: '/qrcode' },
-      { linkfor: 'share', path: '/share' },
-      { linkfor: 'redirect', path: '/redirect' },
-    ],
-  },
-  {
-    title: 'reports',
-    links: [
-      { linkfor: 'analytics', path: '/efficiency' },
-      { linkfor: 'impact', path: '/impact' },
+      { linkfor: 'qrcode', path: '/qrCode' },
     ],
   },
   {
@@ -308,6 +325,7 @@ export const dishTypes: DishType[] = [
   { id: "coffee", name: "Coffee" },
   { id: "tea", name: "Tea" },
   { id: "juice", name: "Juice" },
+  { id: "shake", name: "Shake" },
   { id: "smoothie", name: "Smoothie" },
   { id: "beverage", name: "Beverage" },
 ];
@@ -331,10 +349,11 @@ export const menuAttributes: MenuAttribute[] = [
 ];
 
 export const spicinessLevels: { id: string; name: string; }[] = [
+  { id: "none", name: "Not Spicy" },
   { id: "mild", name: "Mild" },
   { id: "medium", name: "Medium" },
   { id: "hot", name: "Hot" },
-  { id: "extra_hot", name: "Extra Hot" },
+  { id: "your_taste", name: "Your Taste" },
 ];
 
 export const servingTemperatures: { id: string; name: string; }[] = [
@@ -348,4 +367,34 @@ export const portionSizes: { id: string; name: string; }[] = [
   { id: "medium", name: "Medium" },
   { id: "large", name: "Large" },
   { id: "family_size", name: "Family Size" },
+];
+
+export const currencies = [
+  { code: 'USD', symbol: '$', name: 'US Dollar' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'GBP', symbol: '£', name: 'British Pound' },
+  { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+  { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc' },
+  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
+  { code: 'SEK', symbol: 'kr', name: 'Swedish Krona' },
+  { code: 'NZD', symbol: 'NZ$', name: 'New Zealand Dollar' },
+  { code: 'MXN', symbol: '$', name: 'Mexican Peso' },
+  { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
+  { code: 'HKD', symbol: 'HK$', name: 'Hong Kong Dollar' },
+  { code: 'NOK', symbol: 'kr', name: 'Norwegian Krone' },
+  { code: 'KRW', symbol: '₩', name: 'South Korean Won' },
+  { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
+  { code: 'RUB', symbol: '₽', name: 'Russian Ruble' },
+  { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real' },
+  { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
+  { code: 'SAR', symbol: 'SAR', name: 'Saudi Riyal' },
+  { code: 'AED', symbol: 'AED', name: 'UAE Dirham' },
+  { code: 'EGP', symbol: 'EGP', name: 'Egyptian Pound' },
+  { code: 'QAR', symbol: 'QAR', name: 'Qatari Riyal' },
+  { code: 'KWD', symbol: 'KWD', name: 'Kuwaiti Dinar' },
+  { code: 'OMR', symbol: 'OMR', name: 'Omani Rial' },
+  { code: 'BHD', symbol: 'BHD', name: 'Bahraini Dinar' },
 ];

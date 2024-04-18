@@ -46,7 +46,8 @@ export const useMenuSectionStyles = () => {
 
   const accordionSummary = {
     backgroundColor: theme.palette.background.listItem,
-    border: `1px solid ${theme.palette.background.listItemBorder}`,
+    // border: `1px solid ${theme.palette.background.listItemBorder}`,
+    border: 'none',
     borderRadius: theme.spacing(0.5),
     padding: theme.spacing(1),
     marginBottom: 0,
@@ -73,7 +74,7 @@ export const useMenuSectionStyles = () => {
   }
 
   const accordionDetails = {
-    border: `1px solid ${theme.palette.background.listItemBorder}`,
+    // border: `1px solid ${theme.palette.background.listItemBorder}`,
     borderTop: 'none',
     borderBottomLeftRadius: theme.spacing(0.5),
     borderBottomRightRadius: theme.spacing(0.5),
@@ -83,6 +84,10 @@ export const useMenuSectionStyles = () => {
   const accordionActions = {
     justifyContent: 'space-between',
     flexWrap: 'wrap',
+    backgroundColor: theme.palette.background.listItem,
+    borderTopColor: theme.palette.background.default,
+    borderBottomLeftRadius: theme.spacing(0.5),
+    borderBottomRightRadius: theme.spacing(0.5),
   }
 
   const accordionActionButton = {
@@ -90,6 +95,7 @@ export const useMenuSectionStyles = () => {
     marginLeft: '0 !important',
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    color: theme.palette.background.headerButtons,
   }
 
   const buttonContainer = {
@@ -139,6 +145,21 @@ export const useMenuSectionStyles = () => {
     color: '#1e4620'
   }
 
+  const menuSectionMenu = {
+    '& .MuiMenuItem-root': {
+      '& .MuiListItemIcon-root': {
+        '& svg': {
+          color: '#64748B'
+        },
+      },
+      '& .MuiListItemText-root': {
+        '& span': {
+          color: '#64748B'
+        }
+      }
+    }
+  }
+
   return { 
     accordionContainer, 
     accordionSummary,
@@ -152,6 +173,7 @@ export const useMenuSectionStyles = () => {
     placeholderIconContainer,
     activeChip,
     inactiveChip,
+    menuSectionMenu,
   };
 };
 
@@ -175,7 +197,7 @@ export const useMenuItemStyles = () => {
 
   const menuItemContainer = {
     backgroundColor: theme.palette.background.default,
-    border: `1px solid ${theme.palette.background.listItemBorder}`,
+    // border: `1px solid ${theme.palette.background.listItemBorder}`,
     borderRadius: theme.spacing(0.5),
   }
 
@@ -198,6 +220,16 @@ export const useMenuItemStyles = () => {
     color: theme.palette.background.listItemIconButton
   };
 
+  const ingredientChip = {
+    backgroundColor: theme.palette.background.reverse,
+    color: theme.palette.background.default,
+    '& svg': {
+      '&.MuiChip-deleteIcon': {
+        color: theme.palette.background.danger
+      }
+    }
+  }
+
   return { 
     filterSectionsContainer, 
     menuItemContainer,
@@ -205,5 +237,6 @@ export const useMenuItemStyles = () => {
     inactiveChip,
     activeChip,
     itemIconButton,
+    ingredientChip,
   };
 };

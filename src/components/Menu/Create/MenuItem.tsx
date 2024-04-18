@@ -69,13 +69,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
         >
           <Box display="flex" alignItems="flex-start" gap={1}>
             {image && image.url ? (
-              <Image
-                src={image.url}
-                alt={title || 'item'}
-                width={30}
-                height={30}
+              <img
+              src={image.url}
+              alt={title || 'item'}
                 style={{
-                  borderRadius: 4,
+                  width: 30,
+                  height: 30,
+                  borderRadius: 100,
+                  objectFit: 'cover',
                 }}
               />
             ) : (
@@ -97,7 +98,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
             </Box>
             
             {description && (
-              <Typography variant="body1" align="left">
+              <Typography variant="body1" align="left" sx={{ opacity: 0.7 }}>
                 {truncateString(description, 20)}
               </Typography>
             )}

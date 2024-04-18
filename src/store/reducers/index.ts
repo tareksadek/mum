@@ -3,6 +3,7 @@ import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 
 import setupReducer from './setup';
 import loadingCenter from './loadingCenter';
+import appMode from './appMode';
 import notificationReducer from './notificationCenter';
 import authReducer from './authUser';
 import userReducer from './user';
@@ -13,6 +14,7 @@ import menuReducer from './menu'
 const rootReducer = combineReducers({
   loadingCenter: loadingCenter,
   notificationCenter: notificationReducer,
+  mode: appMode,
   modal: modalReducer,
   setup: setupReducer,
   authUser: authReducer,

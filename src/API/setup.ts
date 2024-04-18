@@ -40,7 +40,6 @@ export const fetchDefaultSetup = async () => {
     const isOnline = navigator.onLine;
     const localVersion = getLocalVersion();
     const remoteVersion = docSnapshot.data().version;
-    console.log(JSON.stringify(docSnapshot.data(), null, 4) );
     if (isOnline) {
       // console.log("Online mode detected.");
       
@@ -72,7 +71,6 @@ export const fetchDefaultSetup = async () => {
       };
     }
   } catch (error) {
-    console.error("Error fetching default setup:", error);
     return { success: false, error: (error as Error).message };
   }
 };
@@ -94,7 +92,6 @@ export const checkFirestoreConnectivity = () => {
       unsubscribe(); // Stop listening after handling the initial snapshot.
 
     }, error => {
-      console.error("Snapshot error:", error);
       reject(false); // Indicating offline in case of any error
       unsubscribe(); // Stop listening if there's an error.
     });

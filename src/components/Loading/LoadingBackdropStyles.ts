@@ -262,6 +262,22 @@ export const useCubeStyles = () => {
   return { backdropContainer, cubeWrapper, cubeFolding, loading, leaf1, leaf2, leaf3, leaf4 };
 };
 
+export const useSimpleStyles = () => {
+  const theme = useTheme();
+
+  const container = {
+    background: 'rgba(0, 0, 0, 0.5)',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100vh',
+    zIndex: 100,
+  };
+
+  return { container }
+}
+
 
 type BackdropProps = {
   boxed?: boolean;

@@ -2,18 +2,16 @@ import React, {
   useEffect,
   useState,
   useCallback,
-  useContext,
-  lazy,
-  Suspense
+  useContext
 } from 'react';
 import _ from 'lodash';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { RootState, AppDispatch } from '../store/reducers';
-import { BasicInfoFormDataTypes } from '../types/restaurant';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { AppDispatch } from '../store/reducers';
+import { WorkingDaysForm } from '../types/restaurant';
 import { useRegisterSubmit, SubmitContext } from '../contexts/SubmitContext';
-import { updateBasicInfo } from '../store/reducers/restaurant';
+import { updateWorkingDays } from '../store/reducers/restaurant';
 import { useLayoutStyles } from '../theme/layout';
 import SaveButton from '../layout/SaveButton';
 import { authSelector } from '../store/selectors/auth';
@@ -21,86 +19,91 @@ import { restaurantSelector } from '../store/selectors/restaurant';
 import AppLayout from '../layout/AppLayout';
 import WorkingHoursCreator from '../components/Restaurant/WorkingHoursCreator';
 
-const BasicInfoForm = lazy(() => import('../components/Restaurant/BasicInfoForm'));
+const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const defaultValues = {
+  workingDays: dayNames.map((dayName: string) => ({
+    active: false,
+    dayName,
+    workingHours: [{ from: '', to: '' }],
+  })),
+}
 
 const Hours: React.FC = () => {
   const layoutClasses = useLayoutStyles()
-  const { userId, isLoggedIn, currentUser } = useSelector(authSelector);
-  const { restaurant } = useSelector(restaurantSelector);
-  const isLoading = useSelector((state: RootState) => state.loadingCenter.loadingCounter > 0);
+  const [expanded, setExpanded] = useState<string | false>(false);
+  const { userId, currentUser } = useSelector(authSelector);
+  const { restaurant, restaurantId, workingDays } = useSelector(restaurantSelector);
   const registerSubmit = useRegisterSubmit();
   const context = useContext(SubmitContext);
   if (!context) throw new Error('Context not available');
   const { setFormChanged, setFormValid, formValid, formChanged } = context;
   const dispatch = useDispatch<AppDispatch>();
 
-  const [currentAddress, setCurrentAddress] = useState<string | null>(null)
-  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const { control, register, handleSubmit, formState: { errors, isValid }, setValue, watch } = useForm<WorkingDaysForm>({ defaultValues });
 
-  // const { control, register, handleSubmit, formState: { errors, isValid }, setValue, watch } = useForm<BasicInfoFormDataTypes>({
-  //   defaultValues: {
-  //     firstName: restaurant && restaurant.basicInfoData?.firstName ? restaurant.basicInfoData?.firstName : '',
-  //     lastName: restaurant && restaurant.basicInfoData?.lastName ? restaurant.basicInfoData?.lastName : '',
-  //     email: restaurant && restaurant.basicInfoData?.email? restaurant.basicInfoData?.email : '',
-  //     phone1: restaurant && restaurant.basicInfoData?.phone1 ? restaurant.basicInfoData?.phone1 : '',
-  //     phone2: restaurant && restaurant.basicInfoData?.phone2 ? restaurant.basicInfoData?.phone2 : '',
-  //     address: restaurant && restaurant.basicInfoData?.address ? restaurant.basicInfoData?.address : '',
-  //   },
-  //   mode: 'onBlur',
-  // });
-  // const watchedValues = watch();  
+  const watchedValues = watch();  
 
-  // useEffect(() => {
-  //   if (restaurant) {
-  //     setValue('firstName', restaurant.basicInfoData?.firstName || '');
-  //     setValue('lastName', restaurant.basicInfoData?.lastName || '');
-  //     setValue('email', restaurant.basicInfoData?.email || '');
-  //     setValue('phone1', restaurant.basicInfoData?.phone1 || '');
-  //     setValue('phone2', restaurant.basicInfoData?.phone2 || '');
-  //     setValue('address', restaurant.basicInfoData?.address || '');
-  //     setLocation(restaurant.basicInfoData?.location || null)
-  //   }
-  // }, [restaurant, setValue]);
+  const { fields } = useFieldArray({
+    control,
+    name: "workingDays",
+  });
 
-  // useEffect(() => {
-  //   if (restaurant && restaurant?.basicInfoData && restaurant.basicInfoData.address) {
-  //     setCurrentAddress(restaurant.basicInfoData.address)
-  //   }
-  //   if (restaurant && restaurant?.basicInfoData && restaurant.basicInfoData.location) {
-  //     setLocation(restaurant.basicInfoData.location)
-  //   }
-  // }, [restaurant]);
+  useEffect(() => {
+    if (workingDays && workingDays.length > 0) {
+      setValue('workingDays', workingDays.map(day => ({
+        ...day,
+        active: day.active,
+        workingHours: day.workingHours && day.workingHours.length > 0 
+          ? day.workingHours 
+          : [{ from: '', to: '' }],
+      })));
+    }
+  }, [workingDays, setValue]);
 
-  // const handleBasicInfoSubmit = useCallback((formData: Partial<BasicInfoFormDataTypes>) => {
-  //   if (!userId || !currentUser) {
-  //     return;
-  //   }
-  //   console.log(formData)
-  //   formData.location = location
-  //   dispatch(updateBasicInfo({userId, restaurantId: currentUser.activeRestaurantId, formData}));
-  // }, [userId, dispatch, currentUser, location]);
+  const handleWorkingDaysSubmit = useCallback((workingDays: WorkingDaysForm) => {
+    if (!userId || !currentUser) {
+      return;
+    }
+    if (restaurantId) {
+      dispatch(updateWorkingDays({userId, restaurantId, workingDays}))
+    }
+  }, [userId, dispatch, currentUser, restaurantId]);
 
-  // useEffect(() => {
-  //   registerSubmit(() => handleSubmit(handleBasicInfoSubmit)());
-  // }, [registerSubmit, handleSubmit, handleBasicInfoSubmit]);
+  useEffect(() => {
+    registerSubmit(() => handleSubmit(handleWorkingDaysSubmit)());
+  }, [registerSubmit, handleSubmit, handleWorkingDaysSubmit]);
 
-  // useEffect(() => {
-  //   setFormValid(isValid);
-  // }, [isValid, setFormValid]);  
+  useEffect(() => {
+    setFormValid(isValid);
+  }, [isValid, setFormValid]);  
 
-  // useEffect(() => {
-  //   if (restaurant && restaurant.basicInfoData) {
-  //     const restaurantDataWithoutLocation = _.omit(restaurant.basicInfoData, 'location');      
-  //     const hasChanged = !_.isEqual(restaurantDataWithoutLocation, watchedValues);
-      
-  //     setFormChanged(hasChanged);
-  //   }
-  // }, [watchedValues, setFormChanged, restaurant]);
+  useEffect(() => {
+    let formChanged = false
+    if (restaurant && restaurant.workingDays) {
+      formChanged = !_.isEqual(restaurant.workingDays, watchedValues);
+      setFormChanged(formChanged);
+    } else {
+      formChanged = !_.isEqual(defaultValues, watchedValues);
+      setFormChanged(formChanged);
+    }
+  }, [watchedValues, setFormChanged, restaurant]);
+
+  const handleAccordionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   return (
     <AppLayout>
       <Box p={2}>
-          <WorkingHoursCreator />
+        <form onSubmit={handleSubmit(handleWorkingDaysSubmit)}>
+          <WorkingHoursCreator
+            control={control}
+            register={register}
+            fields={fields}
+            watchedValues={watchedValues}
+            expanded={expanded}
+            expandedChange={handleAccordionChange}
+          />
           <Box
             sx={layoutClasses.stickyBottomBox}
             display="flex"
@@ -113,6 +116,7 @@ const Hours: React.FC = () => {
               disabled={!formValid || !formChanged}
             />
           </Box>
+          </form>
       </Box>
     </AppLayout>
   );

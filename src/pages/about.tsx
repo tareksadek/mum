@@ -3,8 +3,6 @@ import React, {
   useState,
   useCallback,
   useContext,
-  lazy,
-  Suspense
 } from 'react';
 import _ from 'lodash';
 import { Box, Typography } from '@mui/material';
@@ -19,8 +17,7 @@ import SaveButton from '../layout/SaveButton';
 import { authSelector } from '../store/selectors/auth';
 import { restaurantSelector } from '../store/selectors/restaurant';
 import AppLayout from '../layout/AppLayout';
-
-const AboutForm = lazy(() => import('../components/Restaurant/AboutForm'));
+import AboutForm from '../components/Restaurant/AboutForm';
 
 const About: React.FC = () => {
   const layoutClasses = useLayoutStyles()
@@ -82,31 +79,17 @@ const About: React.FC = () => {
     <AppLayout>
       <Box p={2}>
         <form onSubmit={handleSubmit(handleAboutSubmit)}>
-          <Suspense
-            fallback={(
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexDirection="column"
-                p={2}  
-              >
-                <Typography align='center' variant='body1'>Loading...</Typography>
-              </Box>
-            )}
-          >
-            <AboutForm
-              formStatedata={restaurant && restaurant?.aboutData ? restaurant?.aboutData : null}
-              loadingData={isLoading}
-              control={control}
-              register={register}
-              errors={errors}
-              setValue={setValue}
-              defaultData={null}
-              currentUser={currentUser}
-              currentVideo={currentVideo}
-            />
-          </Suspense>
+          <AboutForm
+            formStatedata={restaurant && restaurant?.aboutData ? restaurant?.aboutData : null}
+            loadingData={isLoading}
+            control={control}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            defaultData={null}
+            currentUser={currentUser}
+            currentVideo={currentVideo}
+          />
           {/* {formChanged && ( */}
             <Box
               sx={layoutClasses.stickyBottomBox}

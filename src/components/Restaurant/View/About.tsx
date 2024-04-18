@@ -1,9 +1,10 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { RootState } from '../../../store/reducers';
 import { RestaurantDataType } from '../../../types/restaurant';
+import EditableSection from '../../../layout/EditableSection';
 
 type AboutProps = {
   restaurant: RestaurantDataType;
@@ -22,10 +23,12 @@ const About: React.FC<AboutProps> = ({ restaurant }) => {
 
   if (aboutData) {
     return (
-      <Box pl={1} pr={1}>
-        <Typography variant="body1" align="center" style={{ fontSize: '0.75rem', lineHeight: '1.4rem' }}>
-          {aboutData}
-        </Typography>
+      <Box>
+        <EditableSection linkTo='/about'>
+          <Typography variant="body1" align="center">
+            {aboutData}
+          </Typography>
+        </EditableSection>
       </Box>
     );
   }

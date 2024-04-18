@@ -1,4 +1,5 @@
-import React, { lazy, Suspense, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { formatISO } from 'date-fns';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -21,13 +22,12 @@ import { RootState, AppDispatch } from '../store/reducers';
 import { saveRestaurant } from '../store/reducers/restaurant';
 import { replaceEmptyOrUndefinedWithNull } from '../utilities/utils';
 import { Box, Typography, Stepper, Step, StepLabel } from '@mui/material';
-import ProtectedRoute from '../hoc/ProtectedRoute';
-
-const StepOne = lazy(() => import('../components/Restaurant/create/StepOne'));
-const StepTwo = lazy(() => import('../components/Restaurant/create/StepTwo'));
-const StepThree = lazy(() => import('../components/Restaurant/create/StepThree'));
-const StepFour = lazy(() => import('../components/Restaurant/create/StepFour'));
-const StepFive = lazy(() => import('../components/Restaurant/create/StepFive'));
+import AppLayout from '@/layout/AppLayout';
+import StepOne from '../components/Restaurant/create/StepOne';
+import StepTwo from '../components/Restaurant/create/StepTwo';
+import StepThree from '../components/Restaurant/create/StepThree';
+import StepFour from '../components/Restaurant/create/StepFour';
+import StepFive from '../components/Restaurant/create/StepFive';
 
 const CreateRestaurant: React.FC = () => {
   const router = useRouter();
@@ -86,7 +86,7 @@ const CreateRestaurant: React.FC = () => {
     return activeStep === steps.length - 1;
   }, [activeStep, steps]);
 
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     if (isLastStep()) {
       if (basicInfoData) {
         basicInfoData.location = location
@@ -111,11 +111,15 @@ const CreateRestaurant: React.FC = () => {
       restaurantData = replaceEmptyOrUndefinedWithNull(restaurantData);
       
       if (authUser.userId) {
-        dispatch(saveRestaurant({ userId: authUser.userId, restaurantData }));
-      }
-
-      if (currentUser) {
-        router.push(`/${currentUser?.profileUrlSuffix}`);
+        try {
+          const actionResult = await dispatch(saveRestaurant({ userId: authUser.userId, restaurantData }));
+          unwrapResult(actionResult);
+          if (currentUser) {
+            router.push(`/${currentUser?.profileUrlSuffix}`);
+          }
+        } catch (error) {
+          console.error('Failed to save restaurant:', error);
+        }
       }
 
     } else {
@@ -201,7 +205,7 @@ const CreateRestaurant: React.FC = () => {
 
   if (!isLoading) {
     return (
-      <ProtectedRoute>
+      <AppLayout>
         <Box>
           <Box pt={2} pb={2}>
             <Typography variant="h3" align="center">Create Your Restaurant</Typography>
@@ -217,25 +221,11 @@ const CreateRestaurant: React.FC = () => {
               </Stepper>
             </Box>
             <Box width="100%" pl={2} pr={2}>
-              <Suspense
-                fallback={(
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    flexDirection="column"
-                    p={2}
-                  >
-                    <Typography align='center' variant='body1'>Loading...</Typography>
-                  </Box>
-                )}
-              >
-                {stepComponents[getSteps()[activeStep]]}
-              </Suspense>
+              {stepComponents[getSteps()[activeStep]]}
             </Box>
           </Box>
         </Box>
-      </ProtectedRoute>
+      </AppLayout>
     );
   } else {
     return null;

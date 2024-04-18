@@ -60,7 +60,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({
                   alignItems="center"
                 >
                   <Box ml={1} display="flex" alignItems="center" gap={1}>
-                    <Typography variant="body1" align="left">
+                    <Typography variant="h4" align="left">
                       {title}
                     </Typography>
                   </Box>

@@ -1,13 +1,15 @@
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
-import { Box, Typography, CircularProgress } from '@mui/material';
-import { ProfilePicturePlaceholderIcon } from '../../../layout/CustomIcons';
+import { Box, Typography } from '@mui/material';
+import { MenuItemPlaceholderIcon } from '../../../layout/CustomIcons';
 import { truncateString } from '../../../utilities/utils';
 import { MenuItemType } from '../../../types/menu';
 
 import { menuSelector } from '../../../store/selectors/menu';
 
 import { useMenuItemStyles } from './styles';
+
+import { currencies } from '../../../setup/setup';
 
 interface MenuItemProps {
   item: MenuItemType;
@@ -16,7 +18,7 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ item, onItemClick }) => {
   const classes = useMenuItemStyles();
-  const { sortingMenu } = useSelector(menuSelector);
+  const { menuCurrency } = useSelector(menuSelector);
 
   return (
     <Box
@@ -24,51 +26,84 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, onItemClick }) => {
       alignItems="center"
       justifyContent="space-between"
       flexWrap="wrap"
-      sx={classes.menuItemContainer}
-      p={1}
-      mb={1}
+      p={2}
+      mb={2}
       onClick={() => onItemClick(item)}
+      sx={{
+        ...classes.menuItemContainer,
+        '&:last-child': {
+          marginBottom: 0,
+        },
+      }}
     >
       <Box
         display="flex"
-        alignItems="center"
+        alignItems="flex-start"
+        width="100%"
       >
+        <Box display="flex" alignItems="flex-start" gap={1}>
+          {item.image && item.image.url ? (
+            // <Image
+            //   src={item.image.url}
+            //   alt={item.name || 'item'}
+            //   width={60}
+            //   height={60}
+            //   style={{
+            //     borderRadius: 100,
+            //   }}
+            // />
+            <img
+              src={item.image.url}
+              alt={item.name || 'item'}
+              style={{
+                width: 60,
+                height: 60,
+                objectFit: 'cover',
+                borderRadius: 100,
+              }}
+            />
+          ) : (
+            <MenuItemPlaceholderIcon
+              style={{
+                fontSize: 60
+              }}
+            />
+          )}
+        </Box>
         <Box
+          ml={2}
           display="flex"
-          alignItems="center"
+          alignItems="flex-start"
+          justifyContent="space-between"
+          flexWrap="wrap"
+          width="100%"
         >
-          <Box display="flex" alignItems="flex-start" gap={1}>
-            {item.image && item.image.url ? (
-              <Image
-                src={item.image.url}
-                alt={item.name || 'item'}
-                width={30}
-                height={30}
-                style={{
-                  borderRadius: 4,
-                }}
-              />
-            ) : (
-              <ProfilePicturePlaceholderIcon
-                style={{
-                  fontSize: 30
-                }}
-              />
-            )}
-          </Box>
-          <Box ml={1}>
+          <Box>
             <Box display="flex" alignItems="center" gap={0.5}>
               <Typography variant="body1" align="left">
                 <b>{item.name}</b>
               </Typography>
             </Box>
-            
             {item.description && (
-              <Typography variant="body1" align="left">
+              <Typography variant="body1" align="left" sx={classes.itemDescription}>
                 {truncateString(item.description, 20)}
               </Typography>
             )}
           </Box>
+          {item.newPrice && (
+            <Box>
+              <Typography variant="body1" align="right" sx={classes.newPrice}>
+                {menuCurrency && menuCurrency !== '' ? currencies.find(currency => currency.code === menuCurrency)?.symbol : '$'}
+                {item.newPrice}
+              </Typography>
+              {item.oldPrice && (
+                <Typography variant="body1" align="right" sx={classes.oldPrice}>
+                  {menuCurrency && menuCurrency !== '' ? currencies.find(currency => currency.code === menuCurrency)?.symbol : '$'}
+                  {item.oldPrice}
+                </Typography>
+              )}
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

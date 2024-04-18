@@ -9,13 +9,10 @@ import {
 } from '@firebase/firestore';
 import { firebaseConfig } from '../setup/setup';
 
-console.log(firebaseConfig)
-
 const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 // Determine if we're running in a browser environment
-const isClientSide = typeof window !== 'undefined';
-console.log(isClientSide)
+// const isClientSide = typeof window !== 'undefined';
 let firestore: Firestore;
 
 firestore = getFirestore(firebaseApp);

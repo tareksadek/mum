@@ -6,12 +6,17 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store/reducers';
 import { placeHolderProfileImage } from '../../../../setup/setup';
 import { useCardHeaderStyles } from '../styles';
-import SocialLinks from '../SocialLinks';
+import { RestaurantDataType } from '../../../../types/restaurant';
+import EditableSection from '../../../../layout/EditableSection';
+import AddSectionButton from '../../../../layout/AddSectionButton';
 
-const Header: React.FC = () => {
+type HeaderProps = {
+  restaurant: RestaurantDataType;
+}
+
+const Header: React.FC<HeaderProps> = ({ restaurant }) => {
   const classes = useCardHeaderStyles()
   const setup = useSelector((state: RootState) => state.setup.setup);
-  const restaurant = useSelector((state: RootState) => state.restaurant.restaurant);
   const themeColorCode = restaurant?.themeSettings ? restaurant?.themeSettings.selectedColor.code : ''
 
   let coverImage;
@@ -59,13 +64,18 @@ const Header: React.FC = () => {
                 sx={{ width: 100, height: 100 }}
               />
             </Box>
+
+            <AddSectionButton linkTo='/theme' text='Change theme' mb={2} />
+
             <Box sx={classes.dataContainer} mt={1}>
-              <Box>
-                <Typography variant="h3" align="center">
-                  {restaurant && restaurant.basicInfoData && restaurant.basicInfoData.firstName ? restaurant.basicInfoData.firstName : ''}
-                  {restaurant && restaurant.basicInfoData && restaurant.basicInfoData.lastName ? ` ${restaurant.basicInfoData.lastName}` : ''}
-                </Typography>
-              </Box>
+              <EditableSection linkTo='/info' defaultButton>
+                <Box>
+                  <Typography variant="h3" align="center">
+                    {restaurant && restaurant.basicInfoData && restaurant.basicInfoData.firstName ? restaurant.basicInfoData.firstName : ''}
+                    {restaurant && restaurant.basicInfoData && restaurant.basicInfoData.lastName ? ` ${restaurant.basicInfoData.lastName}` : ''}
+                  </Typography>
+                </Box>
+              </EditableSection>
             </Box>
             {/* {restaurant && restaurant.links && restaurant.links.social && restaurant.links.social.length > 0 && (
               <Box mt={1}>

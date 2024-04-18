@@ -1,4 +1,4 @@
-import React from 'react';
+import { useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/reducers';
 import Box from '@mui/material/Box';
@@ -19,6 +19,7 @@ interface LinksProps {
 }
 
 const SocialLinks: React.FC<LinksProps> = ({ linksStyles, restaurant }) => {
+  const theme = useTheme()
   const setup = useSelector((state: RootState) => state.setup.setup);
   const user = useSelector((state: RootState) => state.user.user);
   const isLoggedIn = useSelector((state: RootState) => state.authUser.isLoggedIn); 
@@ -32,6 +33,8 @@ const SocialLinks: React.FC<LinksProps> = ({ linksStyles, restaurant }) => {
   const isTeamMember = user?.isTeamMember
   const teamId = user?.batchId
 
+  const iconColor = theme.palette.mode === 'light' ? theme.palette.background.link : theme.palette.background.reverse
+
   let links;
 
   if (setup && setup.links) {
@@ -39,8 +42,6 @@ const SocialLinks: React.FC<LinksProps> = ({ linksStyles, restaurant }) => {
   } else if (restaurant && restaurantLinks) {
     links = restaurantLinks;
   }
-
-  console.log(links)
 
   const sortedLinks = links && links.social
     ? [...links.social]
@@ -83,7 +84,7 @@ const SocialLinks: React.FC<LinksProps> = ({ linksStyles, restaurant }) => {
                   width: linksStyles.size || 50,
                   height: linksStyles.size || 50
                 }}
-                {...(linksStyles.noBackground ? { fgColor: '#ffffff' } : {})}
+                {...(linksStyles.noBackground ? { fgColor: iconColor || '#ffffff' } : {})}
                 {...(linksStyles.noBackground ? { bgColor: 'transparent' } : (socialLinksToSelectedColor && backgroundColor ? { bgColor: backgroundColor } : {}))}
                 label={`Visit ${restaurant?.basicInfoData?.firstName || ''} ${restaurant?.basicInfoData?.lastName || ''} ${link.platform}`}
               />

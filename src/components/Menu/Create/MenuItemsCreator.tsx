@@ -293,9 +293,9 @@ const MenuItemsCreator = () => {
             <Typography variant="h4" align="center">{menu?.name}</Typography>
           </Box>
 
-          <Box mb={2} display="flex" alignItems="center" justifyContent="center" flexDirection="column">
+          {/* <Box mb={2} display="flex" alignItems="center" justifyContent="center" flexDirection="column">
             <Chip label="Active" size="small" sx={classes.activeChip} />
-          </Box>
+          </Box> */}
           <DragDropContext
             onDragEnd={onDragEnd}
           >
@@ -308,7 +308,12 @@ const MenuItemsCreator = () => {
                   ref={provided.innerRef}
                 >
                   {menuSections && [...menuSections].sort((a, b) => a.sortOrder - b.sortOrder).map((section, index) => (
-                    <Draggable key={section.id} draggableId={section.id} index={index} isDragDisabled={sortingMenu || expanded !== false}>
+                    <Draggable
+                      key={section.id}
+                      draggableId={section.id}
+                      index={index}
+                      isDragDisabled={sortingMenu || expanded !== false || menuSections.length === 1}
+                    >
                       {(provided) => (
                         <Box
                           ref={provided.innerRef}
@@ -333,12 +338,22 @@ const MenuItemsCreator = () => {
                             {section.description || (section.image && section.image.url) ? (
                               <Box mb={1} display="flex" alignItems="flex-start" gap={1}>
                                 {section.image && section.image.url ? (
-                                  <Image
+                                  // <Image
+                                  //   src={section.image.url}
+                                  //   alt={section.name || 'section'}
+                                  //   width={50}
+                                  //   height={24}
+                                  //   style={{
+                                  //     borderRadius: 4,
+                                  //   }}
+                                  // />
+                                  <img
                                     src={section.image.url}
                                     alt={section.name || 'section'}
-                                    width={50}
-                                    height={24}
                                     style={{
+                                      width: 50,
+                                      height: 40,
+                                      objectFit: 'cover',
                                       borderRadius: 4,
                                     }}
                                   />
@@ -355,13 +370,18 @@ const MenuItemsCreator = () => {
                                   </Typography>
                                 )}
                               </Box>
-                            ) : (<></>)}
+                            ) : null}
                             {section && section.items ? (
                               <Droppable droppableId={`items-section-${section.id}`}>
                                 {(provided) => (
                                   <Box ref={provided.innerRef} {...provided.droppableProps}>
                                     {section && section.items && section.items.map((item, index) => (
-                                      <Draggable key={item.id} draggableId={item.id} index={index}>
+                                      <Draggable
+                                        key={item.id}
+                                        draggableId={item.id}
+                                        index={index}
+                                        isDragDisabled={section.items && section.items.length === 1}
+                                      >
                                         {(provided) => (
                                           <Box
                                             ref={provided.innerRef}

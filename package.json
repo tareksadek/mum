@@ -9,7 +9,9 @@
     "export": "next export",
     "build:export": "npm run build && npm run export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-sw": "tsc -p tsconfig.sw.json",
+    "build-sw-webpack": "webpack --config webpack.sw.config.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -19,6 +21,7 @@
     "@firebase/firestore": "^4.4.1",
     "@firebase/functions": "^0.11.0",
     "@firebase/storage": "^0.12.0",
+    "@google-cloud/translate": "^8.2.0",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "@mui/icons-material": "^5.15.7",
@@ -51,6 +54,7 @@
     "react-hook-form": "^7.49.3",
     "react-player": "^2.14.1",
     "react-redux": "^9.1.0",
+    "react-share": "^5.1.0",
     "react-social-icons": "^6.10.0",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
@@ -63,6 +67,16 @@
     "@types/react-dom": "^18",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.4",
-    "typescript": "^5"
+    "terser-webpack-plugin": "^5.3.10",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.4",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "workbox-core": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0",
+    "workbox-webpack-plugin": "^7.0.0"
   }
 }

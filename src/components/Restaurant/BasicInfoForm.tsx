@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, lazy, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { setKey, fromAddress } from 'react-geocode';
 import debounce from 'lodash/debounce';
@@ -9,8 +9,7 @@ import { BasicInfoFormDataTypes } from '../../types/restaurant';
 import { UserType } from '../../types/user';
 import { RootState } from '../../store/reducers';
 import { useConnectivity } from '../../contexts/ConnectivityContext';
-
-const GoogleMapDisplay = lazy(() => import('./GoogleMapDisplay'));
+import GoogleMapDisplay from './GoogleMapDisplay';
 
 interface BasicInfoProps {
   formStatedata: BasicInfoFormDataTypes | null;
@@ -274,21 +273,7 @@ const BasicInfoForm: React.FC<BasicInfoProps> = ({
             </Box>
           )}
           {location && connectivity.isOnline && (
-            <Suspense
-              fallback={(
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flexDirection="column"
-                  p={2}
-                >
-                  <Typography align='center' variant='body1'>Loading...</Typography>
-                </Box>
-              )}
-            >
-              <GoogleMapDisplay lat={location.lat} lng={location.lng} />
-            </Suspense>
+            <GoogleMapDisplay lat={location.lat} lng={location.lng} />
           )}
           {mapError && connectivity.isOnline && (
             <Typography color="error">

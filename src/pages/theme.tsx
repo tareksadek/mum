@@ -4,8 +4,6 @@ import React, {
   useCallback,
   useContext,
   useRef,
-  lazy,
-  Suspense
 } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -25,8 +23,7 @@ import SaveButton from '../layout/SaveButton';
 import { authSelector } from '../store/selectors/auth';
 import { restaurantSelector } from '../store/selectors/restaurant';
 import AppLayout from '../layout/AppLayout';
-
-const ThemeCreator = lazy(() => import('../components/Restaurant/ThemeCreator'));
+import ThemeCreator from '../components/Restaurant/ThemeCreator';
 
 const Theme: React.FC = () => {
   const layoutClasses = useLayoutStyles()
@@ -89,26 +86,12 @@ const Theme: React.FC = () => {
   return (
     <AppLayout>
       <Box p={2}>
-        <Suspense
-          fallback={(
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              flexDirection="column"
-              p={2}  
-            >
-              <Typography align='center' variant='body1'>Loading...</Typography>
-            </Box>
-          )}
-        >
-          <ThemeCreator
-            data={themeSettings}
-            setData={setThemeSettings}
-            favoriteColors={favoriteColors}
-            setFavoriteColors={setFavoriteColors}
-          />
-        </Suspense>
+        <ThemeCreator
+          data={themeSettings}
+          setData={setThemeSettings}
+          favoriteColors={favoriteColors}
+          setFavoriteColors={setFavoriteColors}
+        />
         <Box
           sx={layoutClasses.stickyBottomBox}
           display="flex"

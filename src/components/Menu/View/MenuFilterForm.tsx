@@ -1,12 +1,9 @@
-import React, { useState, useContext, useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 import { menuSelector } from '../../../store/selectors/menu';
-import { closeModal } from '../../../store/reducers/modal';
-import { useForm, Controller } from 'react-hook-form';
-import { useRegisterSubmit, SubmitContext } from '../../../contexts/SubmitContext';
+import { Controller } from 'react-hook-form';
 import { Box, TextField, FormControlLabel, Tabs, Tab, InputAdornment, Checkbox, FormGroup, FormLabel, Radio, RadioGroup, Grid, Slider, Typography } from '@mui/material';
-import { MenuItemType } from '../../../types/menu';
-import { dietaryRestrictions, dishTypes, spicinessLevels, servingTemperatures, portionSizes } from '../../../setup/setup';
+import { dietaryRestrictions, dishTypes, spicinessLevels, servingTemperatures, portionSizes, currencies } from '../../../setup/setup';
 import { useMenuItemStyles } from './styles'
 
 interface MenuFilterFormProps {
@@ -61,7 +58,7 @@ const MenuFilterForm: React.FC<MenuFilterFormProps> = ({
   selectedPrice
 }) => {
   const classes = useMenuItemStyles()
-  const { menu, menuId } = useSelector(menuSelector);
+  const { menuCurrency } = useSelector(menuSelector);
 
   const [tabValue, setTabValue] = useState(0);
   const [priceValue, setPriceValue] = useState(Number(selectedPrice) || maxPrice);
@@ -129,7 +126,11 @@ const MenuFilterForm: React.FC<MenuFilterFormProps> = ({
                       {...inputProps}
                       type="number"
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        startAdornment: <InputAdornment
+                            position="start"
+                          >
+                            {menuCurrency && menuCurrency !== '' ? currencies.find(currency => currency.code === menuCurrency)?.symbol : '$'}
+                          </InputAdornment>,
                       }}
                       onChange={handlePriceInputChange}
                       onBlur={handlePriceInputBlur}
@@ -163,7 +164,6 @@ const MenuFilterForm: React.FC<MenuFilterFormProps> = ({
                               <Checkbox
                                 checked={field.value.includes(restriction.id)}
                                 onChange={(e) => {
-                                  console.log(e)
                                   const newValues = e.target.checked
                                     ? [...field.value, restriction.id]
                                     : field.value.filter((id: string) => id !== restriction.id);

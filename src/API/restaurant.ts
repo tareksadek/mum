@@ -14,6 +14,7 @@ import {
   ColorType,
   LinkType,
   CreateRestaurantResponseType,
+  WorkingDaysForm,
 } from '../types/restaurant';
 import {
   MenuType,
@@ -58,8 +59,7 @@ export const deleteImageFromStorage = async (imageUrl: string): Promise<{ succes
 export const createRestaurant = async (userId: string, restaurantData: RestaurantDataType): Promise<CreateRestaurantResponseType> => {
   const userRef = doc(firestore, 'users', userId);
   const restaurantsCollectionRef = collection(userRef, 'restaurants');
-  console.log(restaurantData);
-  
+
   // Start a batch write
   const batch = writeBatch(firestore);
 
@@ -134,9 +134,7 @@ export const createRestaurant = async (userId: string, restaurantData: Restauran
     });
 
     return { success: true, restaurant: { id: newRestaurantId, title: restaurantTitle, data: combinedData } };
-  } catch (error) {
-    console.log(error);
-    
+  } catch (error) {    
     console.error("Error saving profile:", error);
     return { success: false, error: (error as Error).message };
   }
@@ -195,9 +193,7 @@ export const fetchProfileImageSubcollection = async (userId: string, profileId: 
     } else {
       return null;
     }
-  } catch (error) {
-    console.log(error);
-    
+  } catch (error) {    
     if (error instanceof Error) {
       console.error('Error fetching profile image:', error.message);
       if (error.message === "Query timeout") {
@@ -221,7 +217,6 @@ export const fetchRestaurantById = (userId: string, restaurantId: string) => {
       if (restaurantSnapshot.exists()) {
         let restaurantData = processRestaurantData(restaurantSnapshot, userId);
         restaurantData = { ...restaurantData, id: restaurantId };  
-        console.log('restaurant fetching resolved from server')    
         mainResolve({ success: true, data: restaurantData });
       } else if (restaurantSnapshot.metadata.fromCache) {
         // If data is from cache and doesn't exist, try fetching from server
@@ -236,7 +231,6 @@ export const fetchRestaurantById = (userId: string, restaurantId: string) => {
             mainReject({ success: false, error: 'Restaurant not found.' });
           }
         } catch (error) {
-          console.error("Error fetching restaurant from server:", error);
           mainReject({ success: false, error: (error as Error).message });
         }
       } else {
@@ -263,7 +257,6 @@ export const updateRestaurantBasicInfo = (
     updateDoc(profileRef, { basicInfoData }) // Ensure the field name matches your Firestore document structure
       .then(() => {
         // Successfully updated the document
-        console.log('success')
         resolve({ success: true });
       })
       .catch(error => {
@@ -276,14 +269,29 @@ export const updateRestaurantBasicInfo = (
 
 export const updateRestaurantAboutInfo = (userId: string, restaurantId: string, aboutData: AboutFormDataTypes) => {
   return new Promise<{ success: boolean, error?: string }>((resolve, reject) => {
-    const profileRef = doc(firestore, 'users', userId, 'restaurants', restaurantId);
+    const restaurantRef = doc(firestore, 'users', userId, 'restaurants', restaurantId);
 
-    updateDoc(profileRef, { aboutData })
+    updateDoc(restaurantRef, { aboutData })
       .then(() => {
         resolve({ success: true });
       })
       .catch(error => {
         console.error("Error updating about info:", error);
+        reject({ success: false, error: error.message });
+      });
+  });
+};
+
+export const updateRestaurantWorkingDays = (userId: string, restaurantId: string, workingDays: WorkingDaysForm) => {
+  return new Promise<{ success: boolean, error?: string }>((resolve, reject) => {
+    const restaurantRef = doc(firestore, 'users', userId, 'restaurants', restaurantId);
+
+    updateDoc(restaurantRef, { workingDays })
+      .then(() => {
+        resolve({ success: true });
+      })
+      .catch(error => {
+        console.error("Error updating Working Days:", error);
         reject({ success: false, error: error.message });
       });
   });
@@ -569,7 +577,6 @@ export const getMemberLinkClicks = (userId: string): Promise<APIResponse<LinkCli
       unsubscribe();  // Stop listening after handling the initial snapshot.
       
     }, error => {
-      console.error("Snapshot error:", error);
       reject({ success: false, data: [], error: error.message });
       unsubscribe();  // Stop listening if there's an error.
     });
@@ -631,6 +638,28 @@ export const createMenu = async (userId: string, restaurantId: string, menuData:
     return { success: true, data: fullMenuData };
   } catch (error) {
     console.error("Error creating menu:", error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
+  }
+};
+
+/**
+ * Edits an existing menu for a specific restaurant.
+ * 
+ * @param userId - The ID of the user owning the restaurant.
+ * @param restaurantId - The ID of the restaurant for which the menu is being edited.
+ * @param menuId - The ID of the menu to edit.
+ * @param menuData - The new data for the menu following the MenuType structure, excluding the ID.
+ * @returns A promise resolving to an object indicating the success status and potentially an error message.
+ */
+export const editMenu = async (userId: string, restaurantId: string, menuId: string, menuData: MenuType) => {
+  try {
+    const menuRef = doc(firestore, `users/${userId}/restaurants/${restaurantId}/menus`, menuId);
+
+    // Update the menu document with new data
+    await updateDoc(menuRef, menuData);
+
+    return { success: true, data: menuData };
+  } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 };
@@ -728,7 +757,6 @@ export const createMenuItem = async (
 
     return { success: true, data: firestoreItemData };
   } catch (error) {
-    console.error("Error creating item:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred', data: null };
   }
 };
@@ -764,10 +792,8 @@ export const deleteMenuItem = async (
       await deleteImageFromStorage(`users/${userId}/menuItems/${itemId}.webp`)
     }
 
-    console.log("Menu item deleted successfully.");
     return { success: true };
   } catch (error) {
-    console.error("Error deleting menu item:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 };
@@ -817,10 +843,8 @@ export const deleteMenuSection = async (userId: string, restaurantId: string, me
       await deleteImageFromStorage(sectionImageStoragePath);
     }
 
-    console.log("Menu section and its items deleted successfully.");
     return { success: true };
   } catch (error) {
-    console.error("Error deleting menu section and its items:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 };
@@ -845,9 +869,8 @@ export const editMenuItem = async (
   itemData: MenuItemType
 ): Promise<{ success: boolean; data?: MenuItemType | null; error?: string }> => {
   let imageUrlUpdate: string | null = null;
-
   // Case 1: Image is removed
-  if (itemData.image && itemData.image.blob === null && itemData.image.url === null) {
+  if (itemData.image && itemData.image.blob === null && itemData.image.url === null && itemData.image.removed) {
     // Delete the image from storage if imageUrl exists and is not null
     const deleteResponse = await deleteImageFromStorage(`users/${userId}/menuItems/${itemId}.webp`);
     if (!deleteResponse.success) {
@@ -879,7 +902,7 @@ export const editMenuItem = async (
     await setDoc(doc(firestore, `users/${userId}/restaurants/${restaurantId}/menus/${menuId}/sections/${sectionId}/items/${itemId}`), firestoreItemData, { merge: true });
     return { success: true, data: firestoreItemData };
   } catch (error) {
-    console.error("Error editing item:", error);
+    console.log(error)
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred', data: null };
   }
 };
@@ -936,7 +959,6 @@ export const editMenuSection = async (
     await setDoc(doc(firestore, `users/${userId}/restaurants/${restaurantId}/menus/${menuId}/sections/${sectionId}`), firestoreSectionData, { merge: true });
     return { success: true, data: firestoreSectionData };
   } catch (error) {
-    console.error("Error editing section:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred', data: null };
   }
 };
@@ -990,7 +1012,6 @@ export const fetchMenu = async (userId: string, restaurantId: string, menuId: st
 
     return { success: true, data: menuData };
   } catch (error) {
-    console.error("Error fetching menu:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 };
@@ -1008,7 +1029,6 @@ export const updateSectionSortOrder = async (
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating section sort order:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 };
@@ -1027,7 +1047,6 @@ export const updateItemSortOrder = async (
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating item sort order:", error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 };

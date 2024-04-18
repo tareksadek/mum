@@ -16,6 +16,8 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import LogoutIcon from '@mui/icons-material/Logout';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ListIcon from '@mui/icons-material/List';
 import PlaceHolderIcon from '@mui/icons-material/Star';
 
 interface IconForLinkProps {
@@ -30,6 +32,8 @@ const MenuLinkIcon = ({ linkfor }: IconForLinkProps) => {
       return <InfoIcon />;
     case "about info":
       return <DocumentScannerIcon />;
+    case "working hours":
+      return <CalendarMonthIcon />;
     case "about":
       return <DocumentScannerIcon />;
     case "images":
@@ -42,6 +46,8 @@ const MenuLinkIcon = ({ linkfor }: IconForLinkProps) => {
       return <LinkIcon />;
     case "theme":
       return <ColorLensIcon />;
+    case "menu":
+      return <ListIcon />;
     case "contacts":
       return <ContactsIcon />;
     case "contactForm":

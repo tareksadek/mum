@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
 import { Box, BottomNavigation, BottomNavigationAction } from '@mui/material';
-import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import StorefrontIcon from '@mui/icons-material/Storefront';
+import { useSelector } from 'react-redux';
+import { restaurantSelector } from '../store/selectors/restaurant';
+import { AboutIcon, RestaurantMenuIcon, ContactIcon } from './CustomIcons';
+import { useBottomNavStyles } from './appStyles';
 
-import { useSBottomNavStyles } from './appStyles';
 
 interface BottomNavProps {
   value: number | 0;
@@ -12,8 +11,11 @@ interface BottomNavProps {
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({ value, setValue }) => {
-  const classes = useSBottomNavStyles();
-  console.log(value)
+  const { restaurantTheme } = useSelector(restaurantSelector);
+  const themeColorName = restaurantTheme ? restaurantTheme.selectedColor.name : null
+  const themeColorCode = restaurantTheme ? restaurantTheme.selectedColor.code : null
+  const backgroundColor = themeColorName !== 'grey' && themeColorCode ? themeColorCode : null;
+  const classes = useBottomNavStyles(backgroundColor);
   
   return (
     <Box sx={classes.navContainer}>
@@ -25,13 +27,13 @@ const BottomNav: React.FC<BottomNavProps> = ({ value, setValue }) => {
         }}
         sx={classes.bottomNavigation}
       >
-        <BottomNavigationAction label="About" icon={<RestaurantMenuIcon />} />
+        <BottomNavigationAction label="Info" icon={<AboutIcon />} />
         <BottomNavigationAction
           label="Menu"
-          icon={<Box sx={classes.menuButtonIcon}><MenuBookIcon /></Box>}
+          icon={<Box sx={classes.menuButtonIcon}><RestaurantMenuIcon /></Box>}
           sx={classes.menuButton}
         />
-        <BottomNavigationAction label="Contact" icon={<StorefrontIcon />} />
+        <BottomNavigationAction label="Contact" icon={<ContactIcon />} />
       </BottomNavigation>
     </Box>
   );

@@ -10,7 +10,8 @@ export const updateObj = <T extends object, U extends object>(oldObj: T, updated
   ...updatedProps,
 });
 
-export const cleanString = (str: string) => str.replace(/['",./\\;:<>?!@#$%&*()~|]/g, '');
+// export const cleanString = (str: string) => str.replace(/['",./\\;:<>?!@#$%&*()~|]/g, '');
+export const cleanString = (str: string) => str.replace(/\s+/g, '_').replace(/['",./\\;:<>?!@#$%&*()~|]/g, '');
 
 export const deepMerge = (target: any, source: any) => {
   for (let key in source) {

@@ -11,7 +11,6 @@ export const createUserDocument = async (userId: string, userData: Partial<UserT
 		await setDoc(userRef, userData);
 		return { success: true };
 	} catch (error) {
-		console.error("Error creating user document:", error);
 		return { success: false, error: (error as Error).message };
 	}
 };
@@ -274,7 +273,6 @@ export const getUserByRestaurantSuffix = (restaurantSuffix: string) => {
 
         // Assuming processUserData and updateLocalUserVersion can run on both client and server
         const userData = processUserData(firstDoc);
-        console.log(userData);
 
         // Check if running in a browser environment
         if (typeof window !== 'undefined') {
@@ -293,13 +291,11 @@ export const getUserByRestaurantSuffix = (restaurantSuffix: string) => {
             console.log("Offline mode detected. User data fetched from cache.");
           }
         }
-        console.log('user fetching resovled')
         resolve({ success: true, data: userData });
       } else {
         reject({ success: false, error: 'User not found' });
       }
     }).catch(error => {
-      console.error("Error fetching user by profile suffix:", error);
       reject({ success: false, error: (error as Error).message });
     });
   });
@@ -316,7 +312,6 @@ export const doesUserWithProfileSuffixExist = (profileSuffix: string) => {
         resolve({ exists: !userSnapshot.empty });
       })
       .catch(error => {
-        console.error("Error checking user by profile suffix:", error);
         reject({ exists: false, error: (error as Error).message });
       });
   });
@@ -433,7 +428,6 @@ export const getAllUsers = (): Promise<{ success: boolean; data: UserType[]; err
       }
       handleSnapshot(usersSnapshot);
     } catch (error) {
-      console.error("Snapshot error:", error);
       reject({ success: false, data: [], error: (error as Error).message });
     }
   });
@@ -462,7 +456,6 @@ export const getRecentUsers = async (): Promise<UserType[]> => {
 
     return users;
   } catch (error) {
-    console.error("Error fetching recent users:", error);
     throw new Error((error as Error).message);
   }
 };
@@ -484,7 +477,7 @@ export const getRecentUsers = async (): Promise<UserType[]> => {
 // 	}
 // };
 
-export const updateActiveProfileId = (userId: string, activeProfileId: string): Promise<{ success: boolean; error?: string }> => {
+export const updateActiveRestaurantId = (userId: string, activeRestaurantId: string): Promise<{ success: boolean; error?: string }> => {
 	return new Promise<{ success: boolean; error?: string }>((resolve, reject) => {
 		const userRef = doc(firestore, 'users', userId);
 
@@ -493,7 +486,7 @@ export const updateActiveProfileId = (userId: string, activeProfileId: string): 
 
 		// Start the update operation
 		updateDoc(userRef, {
-			activeProfileId: activeProfileId,
+			activeRestaurantId,
       version: newVersion
 		}).then(() => {
       updateLocalUserVersion(userId, newVersion.toString());
@@ -512,7 +505,6 @@ export const updateActiveProfileId = (userId: string, activeProfileId: string): 
 				unsubscribe();
 			});
 		}).catch(error => {
-			console.error("Error updating active profile ID:", error);
 			reject({ success: false, error: (error as Error).message });
 		});
 	});
@@ -526,7 +518,6 @@ export const updateLastLogin = async (userId: string) => {
 			});
 			return { success: true };
 	} catch (error) {
-			console.error("Error updating last login:", error);
 			return { success: false, error: (error as Error).message };
 	}
 };
@@ -597,7 +588,6 @@ export const redirectUserProfiles = async (userId: string, active: boolean, redi
         resolve({ success: true });
       }
     }, (error) => {
-      console.error("Snapshot error:", error);
       unsubscribe();
       reject({ success: false, error: error.message });
     });

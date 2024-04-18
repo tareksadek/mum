@@ -10,6 +10,8 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { useMenuSectionStyles } from './styles';
+
 interface MenuSectionMenuProps {
   title: string | null;
   image: string | null;
@@ -39,6 +41,8 @@ const MenuSectionMenu: React.FC<MenuSectionMenuProps> = ({
   buttonThreeAction,
   buttonThreeText,
 }) => {
+  const classes = useMenuSectionStyles()
+
   const onButtonOneClick = () => {
     if (sectionId && buttonOneAction && handleClose) {
       buttonOneAction(sectionId)
@@ -69,6 +73,7 @@ const MenuSectionMenu: React.FC<MenuSectionMenuProps> = ({
       MenuListProps={{
         'aria-labelledby': `${sectionId}-button`,
       }}
+      sx={classes.menuSectionMenu}
     >
       <MenuItem onClick={onButtonOneClick}>
         <ListItemIcon>

@@ -80,15 +80,10 @@ const MenuFilterDialog: React.FC<MenuFilterDialogProps> = ({ maxPrice, setFilter
     dispatch(closeModal())
     resetDialog()
   }, [dispatch, resetDialog])
-
-  console.log(watchedValues)
-  console.log(defaultFilterValues)
   
   const handleFilterSubmit = useCallback((filters: MenuFilterType) => {
     let filteredSections: MenuSectionType[] | null = null;
-  
-    console.log(filters);
-  
+    
     if (sections) {
       filteredSections = sections.reduce<MenuSectionType[]>((acc, section) => {
         let filteredItems: MenuItemType[] = section.items ? section.items.filter(item => {
@@ -110,7 +105,6 @@ const MenuFilterDialog: React.FC<MenuFilterDialogProps> = ({ maxPrice, setFilter
       }, []);
     }
   
-    console.log(filteredSections);
     setFilterValues(filters)
     setFilteredMenuSections(filteredSections);
     closeDialog();
@@ -132,7 +126,6 @@ const MenuFilterDialog: React.FC<MenuFilterDialogProps> = ({ maxPrice, setFilter
   }, [watchedValues, setFormChanged]);
 
   useEffect(() => {
-    console.log('filter values')
     if (filterValues) {
       setValue('price', filterValues.price);
       setValue('dietaryRestrictions', filterValues.dietaryRestrictions);

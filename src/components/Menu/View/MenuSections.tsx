@@ -51,12 +51,22 @@ const MenuSections: React.FC<MenuSectionsProps> = ({ sections }) => {
               {section.description || (section.image && section.image.url) ? (
                 <Box mb={1} display="flex" alignItems="flex-start" gap={1}>
                   {section.image && section.image.url ? (
-                    <Image
+                    // <Image
+                    //   src={section.image.url}
+                    //   alt={section.name || 'section'}
+                    //   width={50}
+                    //   height={24}
+                    //   style={{
+                    //     borderRadius: 4,
+                    //   }}
+                    // />
+                    <img
                       src={section.image.url}
                       alt={section.name || 'section'}
-                      width={50}
-                      height={24}
                       style={{
+                        width: 50,
+                        height: 40,
+                        objectFit: 'cover',
                         borderRadius: 4,
                       }}
                     />

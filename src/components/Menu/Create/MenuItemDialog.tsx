@@ -104,9 +104,6 @@ const MenuItemDialog: React.FC<MenuItemDialogProps> = ({ section, item, setIsEdi
     setTimeout(() => setIsEditingItem(false), 500);
     resetDialog()
   }, [dispatch, resetDialog, setIsEditingItem])
-
-  console.log(watchedValues)
-  console.log(defaultNewItemValues)
   
   useEffect(() => {
     if (item) {
@@ -122,14 +119,12 @@ const MenuItemDialog: React.FC<MenuItemDialogProps> = ({ section, item, setIsEdi
   }, [item, isItemDialogOpen]);
   
   const handleItemSubmit = useCallback(async (data: MenuItemType) => {
+    console.log(data)
     const itemData = {
       ...data,
       ...(item && item.id ? {} : { sortOrder: menu && section && section.items ? section.items.length : 0 }),
       image: itemImageData,
     };
-
-    console.log(itemData)
-    console.log(section)
   
     if (userId && restaurantId && menuId && section && section.id) {
       try {
@@ -158,9 +153,11 @@ const MenuItemDialog: React.FC<MenuItemDialogProps> = ({ section, item, setIsEdi
   useEffect(() => {   
     let formChanged = false
     const imageChanged = checkIfItemImageChanged();
-
+    
     if (item && item.id) {
-      const cleanItemData = _.omit(item, ['sortOrder', 'image', 'id']);
+      const cleanItemData = _.omit(item, ['sortOrder', 'image', 'id', 'sectionId']);
+      console.log(cleanItemData)
+      console.log(watchedValues)
       formChanged = !_.isEqual(cleanItemData, watchedValues);
       setFormChanged(formChanged || imageChanged);
     } else {

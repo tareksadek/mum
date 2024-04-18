@@ -90,11 +90,19 @@ const CoverImageProcessor: React.FC<CoverImageProps> = ({
     if (data && data.url) {
       return  (
         <Box sx={{ position: 'relative', width: '100%', height: 265 }}>
-          <Image
+          {/* <Image
             src={data.url}
             alt="restaurant"
             fill
             style={{objectFit: 'cover', maxWidth: cropWidth || 'initial' }}
+          /> */}
+          <img
+            src={data.url}
+            alt="restaurant"
+            style={{
+              objectFit: 'cover', 
+              maxWidth: cropWidth || 'initial' 
+            }}
           />
         </Box>
       )
@@ -113,8 +121,8 @@ const CoverImageProcessor: React.FC<CoverImageProps> = ({
           mt={2}
         >
           <Box sx={classes.currentImageContainer} width="100%">
-            <Box sx={{ position: 'relative', width: '100%', height: 265 }}>
-              <Image
+            <Box>
+              {/* <Image
                 src={data.url}
                 alt="Restaurant cover"
                 fill
@@ -122,6 +130,16 @@ const CoverImageProcessor: React.FC<CoverImageProps> = ({
                   objectFit: 'cover',
                   borderRadius: 8,
                   maxWidth: cropWidth || 'initial'
+                }}
+              /> */}
+              <img
+                src={data.url}
+                alt="Restaurant cover"
+                style={{
+                  objectFit: 'cover',
+                  borderRadius: 8,
+                  maxWidth: cropWidth || 'initial',
+                  width:'100%',
                 }}
               />
             </Box>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Typography, Skeleton, Button } from '@mui/material';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { authSelector } from '../../../store/selectors/auth';
 import { menuSelector } from '../../../store/selectors/menu';
+import { restaurantSelector } from '../../../store/selectors/restaurant';
 import { AppDispatch } from '../../../store/reducers';
 import { openModal } from '../../../store/reducers/modal';
 import { MenuItemType, MenuSectionType, MenuFilterType } from '../../../types/menu';
@@ -11,6 +13,11 @@ import { dietaryRestrictions, portionSizes, spicinessLevels, servingTemperatures
 
 import MenuSections from './MenuSections';
 import MenuFilterDialog from './MenuFilterDialog';
+import EditableSection from '../../../layout/EditableSection';
+import AddSectionButton from '../../../layout/AddSectionButton';
+import FilterValueBox from './FilterValuesBox';
+
+import { useMenuContainerStyles } from './styles';
 
 const MenuContainer = () => {
   const [filteredMenuSections, setFilteredMenuSections] = useState<MenuSectionType[] | null>(null)
@@ -18,6 +25,11 @@ const MenuContainer = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { userId } = useSelector(authSelector);
   const { menu, menuSections, loadingMenu } = useSelector(menuSelector);
+  const { restaurantTheme } = useSelector(restaurantSelector);
+  const themeColorName = restaurantTheme ? restaurantTheme.selectedColor.name : null
+  const themeColorCode = restaurantTheme ? restaurantTheme.selectedColor.code : null
+  const backgroundColor = themeColorName !== 'grey' && themeColorCode ? themeColorCode : null;
+  const classes = useMenuContainerStyles(backgroundColor)
 
   const visibleSections = menuSections ? [...menuSections].filter(section => 
     section.visible && section.items && section.items.some((item: MenuItemType)  => item.visible))
@@ -40,8 +52,6 @@ const MenuContainer = () => {
     return 0;
   };
   
-  console.log(filteredMenuSections)
-
   const openMenuFilter = () => {
     dispatch(openModal('filterDialog'))
   }
@@ -64,111 +74,43 @@ const MenuContainer = () => {
       ) : (
         <>
           {menu ? (
-            <Box>
-              <Box mb={2}>
-                <Typography align='center' variant='h3'>{menu.name}</Typography>
-              </Box>
+            <EditableSection linkTo='/menus' defaultButton>
               <Box>
                 <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
                   mb={2}
-                  gap={2}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  flexWrap="wrap"
+                  gap={1}
+                  pl={1}
+                  pr={1}
                 >
-                  <Box width="100%">
-                    <Button
-                      onClick={openMenuFilter}
-                      variant="contained"
-                      color="secondary"
-                      fullWidth
-                    >
-                      Filter Menu
-                    </Button>
-                  </Box>
-                  <Box width="100%">
-                    <Button
-                      onClick={clearMenuFilter}
-                      variant="outlined"
-                      color="secondary"
-                      fullWidth
-                    >
-                      Clear Filter
-                    </Button>
-                  </Box>
+                  <Typography align='center' variant='h3'>{menu.name}</Typography>
+                  <Button
+                    onClick={openMenuFilter}
+                    variant="contained"
+                    startIcon={<FilterListIcon />}
+                    sx={classes.filterButton}
+                  >
+                    Filter Menu
+                  </Button>
                 </Box>
-                {filterValues && (
-                  <Box>
-                    <Typography align='left' variant='h4'>Current Filters:</Typography>
-                    {filterValues.price && filterValues.price !== '' && (
-                      <Box>
-                        <Typography align='left' variant='body1'>
-                          <b>Max Price:</b>
-                          {filterValues.price}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {filterValues.dietaryRestrictions && filterValues.dietaryRestrictions.length > 0 && (
-                      <Box>
-                        <Typography align='left' variant='body1'>
-                          <b>Diet:</b>
-                          {filterValues.dietaryRestrictions
-                            .map(restrictionId => dietaryRestrictions
-                              .find(restriction => restriction.id === restrictionId)?.name)
-                                .filter(name => name).join(" - ")}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {filterValues.types && filterValues.types.length > 0 && (
-                      <Box>
-                        <Typography align='left' variant='body1'>
-                          <b>Meal Type:</b>
-                          {filterValues.types
-                            .map(typeId => dishTypes
-                              .find(type => type.id === typeId)?.name)
-                                .filter(name => name).join(" - ")}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {filterValues.size && filterValues.size !== '' && (
-                      <Box>
-                        <Typography align='left' variant='body1'>
-                          <b>Portion Size:</b>
-                          {portionSizes.find(size => size.id === filterValues.size)?.name}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {filterValues.spiciness && filterValues.spiciness !== '' && (
-                      <Box>
-                        <Typography align='left' variant='body1'>
-                          <b>Spiciness:</b>
-                          {spicinessLevels.find(level => level.id === filterValues.spiciness)?.name}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {filterValues.temperature && filterValues.temperature !== '' && (
-                      <Box>
-                        <Typography align='left' variant='body1'>
-                          <b>Spiciness:</b>
-                          {servingTemperatures.find(temperature => temperature.id === filterValues.temperature)?.name}
-                        </Typography>
-                      </Box>
-                    )}
-                    
-                  </Box>
-                )}
+                <Box>
+                  {filterValues && (
+                    <FilterValueBox
+                      filterValues={filterValues}
+                      onClearFilter={clearMenuFilter}
+                    />
+                  )}
+                </Box>
+                <MenuSections
+                  sections={filteredMenuSections || visibleSections}
+                />
               </Box>
-              <MenuSections
-                sections={visibleSections}
-              />
-            </Box>
+            </EditableSection>
           ) : (
-            <Box>No Menu Create one</Box>
+            <AddSectionButton linkTo='/menus' text='Create Your Menu' />
           )}
         </>
       )}

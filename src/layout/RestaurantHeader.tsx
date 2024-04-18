@@ -1,17 +1,24 @@
 import React from 'react';
 import {
+  Box,
   AppBar,
   Toolbar,
   IconButton,
+  Button,
   Slide,
 } from "@mui/material";
-import { MenuIcon, QrIcon, Logo } from './CustomIcons';
+import ShareIcon from '@mui/icons-material/Share';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import PreviewIcon from '@mui/icons-material/Preview';
+import { MenuIcon, Logo } from './CustomIcons';
 import { useRouter } from 'next/router';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { useAppHeaderStyles } from './appStyles';
-import { AppDispatch } from '../store/reducers';
-import { openModal } from '../store/reducers/modal';
+import { AppDispatch, RootState } from '../store/reducers';
+import { openModal, closeModal } from '../store/reducers/modal';
+import { toggleMode } from '../store/reducers/appMode';
+import QrDrawer from '../components/Restaurant/View/QrDrawer';
 
 type AppHeaderProps = {
   isLoggedIn: boolean;
@@ -39,10 +46,14 @@ const RestaurantHeader: React.FC<AppHeaderProps> = ({
   const classes = useAppHeaderStyles()
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  const openModalName = useSelector((state: RootState) => state.modal.openModal);
+  const isQrModalOpen = openModalName === 'qr';
+
+  const appMode = useSelector((state: RootState) => state.mode.mode);
 
   const goToLogin = () => {
     if (!isLoggedIn) {
-      router.push('/Login')
+      router.push('/login')
     }
   }
 
@@ -68,14 +79,27 @@ const RestaurantHeader: React.FC<AppHeaderProps> = ({
           }}
         >
           <Toolbar>
-            <IconButton
-              edge="end"
-              aria-label="qr-code"
-              onClick={goToLogin}
-              sx={classes.appBarButtons}
-            >
-              <Logo />
-            </IconButton>
+            <Box display="flex" alignItems="center" gap={3.5}>
+              <IconButton
+                edge="end"
+                aria-label="qr-code"
+                onClick={goToLogin}
+                sx={classes.appBarButtons}
+              >
+                <Logo />
+              </IconButton>
+              {isLoggedIn && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={appMode === 'view' ? <EditNoteIcon /> : <PreviewIcon />}
+                  onClick={() => dispatch(toggleMode())}
+                  sx={classes.modeButton}
+                >
+                  {appMode === 'view' ? 'Edit' : 'View'}
+                </Button>
+              )}
+            </Box>
 
             <IconButton
               edge="end"
@@ -88,7 +112,7 @@ const RestaurantHeader: React.FC<AppHeaderProps> = ({
               onClick={handleQrClick}
               sx={classes.appBarButtons}
             >
-              <QrIcon />
+              <ShareIcon />
             </IconButton>
 
             {isLoggedIn && (
@@ -107,6 +131,13 @@ const RestaurantHeader: React.FC<AppHeaderProps> = ({
           </Toolbar>
         </AppBar>
       </HideOnScroll>
+      {isQrModalOpen && (
+        <QrDrawer
+          open={isQrModalOpen}
+          onClose={() => dispatch(closeModal())}
+        />
+      )}
+      
     </>
   );
 }

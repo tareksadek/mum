@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
+import { menuSelector } from '../../../store/selectors/menu';
 import { Controller } from 'react-hook-form';
 import { Box, Switch, TextField, FormControlLabel, Tabs, Tab, InputAdornment, Chip, Checkbox, FormGroup, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { MenuItemType } from '../../../types/menu';
@@ -7,6 +9,7 @@ import { profileImageDimensions } from '../../../setup/setup';
 import ProfileImageProcessor from '../../Restaurant/ProfileImageProcessor';
 import { dietaryRestrictions, dishTypes, spicinessLevels, servingTemperatures, portionSizes } from '../../../setup/setup';
 import { useMenuItemStyles } from './styles'
+import { currencies } from '../../../setup/setup';
 
 interface MenuSectionInfoFormProps {
   itemImageData: ImageType | null;
@@ -64,6 +67,8 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
 }) => {
   const classes = useMenuItemStyles()
   const [tabValue, setTabValue] = useState(0);
+
+  const { menuCurrency } = useSelector(menuSelector);
   
   const handleTabChange = async (event: React.SyntheticEvent, newValue: number) => {
     if (!disableFields) {
@@ -180,7 +185,7 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
                   {...inputProps}
                   type="number"
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    startAdornment: <InputAdornment position="start">{currencies.find(currency => currency.code === menuCurrency)?.symbol}</InputAdornment>,
                   }}
                   disabled={disableFields}
                   error={Boolean(errors.originalPrice)}
@@ -201,7 +206,7 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
                   {...inputProps}
                   type="number"
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    startAdornment: <InputAdornment position="start">{currencies.find(currency => currency.code === menuCurrency)?.symbol}</InputAdornment>,
                   }}
                   disabled={disableFields}
                   error={Boolean(errors.oldPrice)}
@@ -232,6 +237,7 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
                         key={index}
                         label={ingredient}
                         onDelete={() => handleIngredientDelete(index, field.value)}
+                        sx={classes.ingredientChip}
                       />
                     ))}
                   </Box>
@@ -250,7 +256,7 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
               name="description"
               control={control}
               defaultValue=""
-              rules={{ maxLength: 120 }}
+              rules={{ maxLength: 350 }}
               render={({ field }) => (
                 <TextField
                   {...field}
@@ -260,7 +266,7 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
                   label="Description"
                   multiline
                   rows={6}
-                  helperText={errors.description ? "Description must not exceed 120 characters." : `${field.value ? field.value.length : '0'}/120`}
+                  helperText={errors.description ? "Description must not exceed 350 characters." : `${field.value ? field.value.length : '0'}/350`}
                   error={Boolean(errors.description)}
                   disabled={disableFields}
                 />
@@ -299,7 +305,6 @@ const MenuItemInfoForm: React.FC<MenuSectionInfoFormProps> = ({
                               <Checkbox
                                 checked={field.value.includes(restriction.id)}
                                 onChange={(e) => {
-                                  console.log(e)
                                   const newValues = e.target.checked
                                     ? [...field.value, restriction.id]
                                     : field.value.filter((id: string) => id !== restriction.id);

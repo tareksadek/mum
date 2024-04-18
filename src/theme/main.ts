@@ -1,5 +1,4 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-// import './fonts.css';
 
 declare module '@mui/material/styles' {
   interface TypeBackground {
@@ -27,40 +26,42 @@ declare module '@mui/material/styles' {
     panel: string;
     formOption: string;
     buttonProgress: string;
+    link: string;
+    editContainer: string;
   }
 }
 
 const globalTheme = createTheme();
 
 const responsiveTypography = {
-  fontFamily: 'Roboto Condensed, Montserrat, Cairo',
+  fontFamily: 'Outfit, Montserrat, Cairo',
 
   h1: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
       fontWeight: 700,
       fontSize: '2rem',
     },
 
     h2: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
       fontWeight: 600,
       fontSize: '1.75rem',
     },
 
     h3: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
       fontWeight: 600,
       fontSize: '1.5rem',
     },
 
     h4: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
-      fontWeight: 500,
-      fontSize: '1.25rem',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
+      fontWeight: 600,
+      fontSize: '1.1rem',
     },
 
     h5: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
       fontWeight: 400,
       fontSize: '1rem',
       [globalTheme.breakpoints.up('sm')]: {
@@ -69,19 +70,19 @@ const responsiveTypography = {
     },
 
     h6: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
       fontWeight: 400,
       fontSize: '0.875rem',
     },
 
     body1: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
       fontWeight: 400,
       fontSize: '0.875rem',
     },
     
     body2: {
-      fontFamily: 'Roboto Condensed, Helvetica, Arial, sans-serif',
+      fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
     },
 };
 
@@ -99,8 +100,10 @@ const completeTheme = createTheme(globalTheme, {
     MuiButton: {
       styleOverrides: {
         root: {
+          fontFamily: 'Outfit, Helvetica, Arial, sans-serif',
           paddingTop: globalTheme.spacing(2),
           paddingBottom: globalTheme.spacing(2),
+          boxShadow: '0 0 0 transparent'
         }
       }
     },
@@ -216,17 +219,17 @@ const completeTheme = createTheme(globalTheme, {
 const responsiveGlobalTheme = responsiveFontSizes(completeTheme);
 
 const LIGHT_COLOR_PALETTE = {
-  default: '#FBFBFB',
+  default: '#f7f7f7',
   reverse: '#222630',
   lighter: '#ffffff',
-  darker: '#CBD5E1',
+  darker: '#abb1b9',
   darkerPlus: '#8795A6',
   dark: '#64748B',
-  blue: '#25a0ff',
-  darkBlue: '#0080e3',
+  blue: '#FF6100',
+  darkBlue: '#e55902',
   green: '#34A353',
   grey: '#e0e2e5',
-  red: '#BD081C',
+  red: '#d63d42',
 }
 
 const lightTheme = createTheme(responsiveGlobalTheme, {
@@ -258,6 +261,8 @@ const lightTheme = createTheme(responsiveGlobalTheme, {
       panel: LIGHT_COLOR_PALETTE.lighter,
       formOption: LIGHT_COLOR_PALETTE.grey,
       buttonProgress: LIGHT_COLOR_PALETTE.darkerPlus,
+      link: LIGHT_COLOR_PALETTE.dark,
+      editContainer: LIGHT_COLOR_PALETTE.darker,
     },
   },
   components: {
@@ -270,6 +275,12 @@ const lightTheme = createTheme(responsiveGlobalTheme, {
           color: LIGHT_COLOR_PALETTE.reverse,
         },
         h3: {
+          color: LIGHT_COLOR_PALETTE.reverse,
+        },
+        h2: {
+          color: LIGHT_COLOR_PALETTE.reverse,
+        },
+        h1: {
           color: LIGHT_COLOR_PALETTE.reverse,
         },
         body1: {
@@ -314,12 +325,62 @@ const lightTheme = createTheme(responsiveGlobalTheme, {
               textFillColor: LIGHT_COLOR_PALETTE.darker,
             },
           },
+          '& .MuiInputAdornment-root': {
+            '& p': {
+              color: LIGHT_COLOR_PALETTE.darkerPlus
+            }
+          }
         },
         input: {
           color: LIGHT_COLOR_PALETTE.dark,
         },
         notchedOutline: {
           borderColor: LIGHT_COLOR_PALETTE.darker,
+        },
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: LIGHT_COLOR_PALETTE.dark,
+          '&.Mui-checked': {
+            color: LIGHT_COLOR_PALETTE.blue,
+          },
+          '&.Mui-disabled': {
+            color: LIGHT_COLOR_PALETTE.darker,
+          },
+        },
+      },
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          color: LIGHT_COLOR_PALETTE.dark,
+          '&.Mui-checked': {
+            color: LIGHT_COLOR_PALETTE.blue,
+          },
+          '&.Mui-disabled': {
+            color: LIGHT_COLOR_PALETTE.darker, 
+          },
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          '&.Mui-checked': {
+            color: LIGHT_COLOR_PALETTE.blue, 
+            '& + .MuiSwitch-track': {
+              backgroundColor: LIGHT_COLOR_PALETTE.blue,
+              opacity: 0.2,
+            },
+          },
+          '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: 0.5,
+          },
+        },
+        track: {
+          backgroundColor: LIGHT_COLOR_PALETTE.dark,
         },
       },
     },
@@ -405,6 +466,16 @@ const lightTheme = createTheme(responsiveGlobalTheme, {
           },
         },
       },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: LIGHT_COLOR_PALETTE.dark,
+          '&.Mui-disabled': {
+            color: LIGHT_COLOR_PALETTE.darkerPlus,
+          },
+        }
+      }
     },
     MuiStepper: {
       styleOverrides: {
@@ -622,22 +693,46 @@ const lightTheme = createTheme(responsiveGlobalTheme, {
         },
       },
     },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          '& .MuiButtonBase-root': {
+            color: LIGHT_COLOR_PALETTE.reverse,
+            opacity: 0.5,
+            '&.Mui-selected': {
+              color: LIGHT_COLOR_PALETTE.reverse,
+              opacity: 1
+            },
+          }
+        },
+        indicator: {
+          backgroundColor: LIGHT_COLOR_PALETTE.reverse,
+        }
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+          color: LIGHT_COLOR_PALETTE.reverse, 
+        },
+      },
+    },
   },
 });
 
 const DARK_COLOR_PALETTE = {
   default: '#222630',
-  reverse: '#FBFBFB',
+  reverse: '#E0E0E0',
   lighter: '#2A3141',
   light: '#566d87',
   darker: '#2A3043',
   darkerPlus: '#111111',
   dark: '#000000',
-  blue: '#25a0ff',
-  darkBlue: '#0080e3',
+  blue: '#FF6100',
+  darkBlue: '#e55902',
   green: '#34A353',
   grey: '#BEC9D8',
-  red: '#BD081C',
+  red: '#d63d42',
 }
 
 const darkTheme = createTheme(responsiveGlobalTheme, {
@@ -656,7 +751,7 @@ const darkTheme = createTheme(responsiveGlobalTheme, {
       defaultIcon: DARK_COLOR_PALETTE.darker,
       red: DARK_COLOR_PALETTE.red,
       backdrop: DARK_COLOR_PALETTE.default,
-      headerButtons: DARK_COLOR_PALETTE.light,
+      headerButtons: DARK_COLOR_PALETTE.grey,
       accordionIcon: DARK_COLOR_PALETTE.reverse,
       accordionButtonIcon: DARK_COLOR_PALETTE.light,
       accordionButtonIconSelected: DARK_COLOR_PALETTE.grey,
@@ -669,6 +764,8 @@ const darkTheme = createTheme(responsiveGlobalTheme, {
       panel: DARK_COLOR_PALETTE.darker,
       formOption: DARK_COLOR_PALETTE.darker,
       buttonProgress: DARK_COLOR_PALETTE.darkerPlus,
+      link: DARK_COLOR_PALETTE.grey,
+      editContainer: DARK_COLOR_PALETTE.light,
     },
   },
   components: {
@@ -681,6 +778,12 @@ const darkTheme = createTheme(responsiveGlobalTheme, {
           color: DARK_COLOR_PALETTE.reverse,
         },
         h3: {
+          color: DARK_COLOR_PALETTE.reverse,
+        },
+        h2: {
+          color: DARK_COLOR_PALETTE.reverse,
+        },
+        h1: {
           color: DARK_COLOR_PALETTE.reverse,
         },
         body1: {
@@ -725,12 +828,62 @@ const darkTheme = createTheme(responsiveGlobalTheme, {
               textFillColor: DARK_COLOR_PALETTE.light,
             },
           },
+          '& .MuiInputAdornment-root': {
+            '& p': {
+              color: DARK_COLOR_PALETTE.light
+            }
+          }
         },
         input: {
           color: DARK_COLOR_PALETTE.reverse,
         },
         notchedOutline: {
           borderColor: DARK_COLOR_PALETTE.light,
+        },
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: DARK_COLOR_PALETTE.light,
+          '&.Mui-checked': {
+            color: DARK_COLOR_PALETTE.blue,
+          },
+          '&.Mui-disabled': {
+            color: DARK_COLOR_PALETTE.darker,
+          },
+        },
+      },
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          color: DARK_COLOR_PALETTE.light,
+          '&.Mui-checked': {
+            color: DARK_COLOR_PALETTE.blue,
+          },
+          '&.Mui-disabled': {
+            color: DARK_COLOR_PALETTE.darker, 
+          },
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          '&.Mui-checked': {
+            color: DARK_COLOR_PALETTE.blue, 
+            '& + .MuiSwitch-track': {
+              backgroundColor: DARK_COLOR_PALETTE.blue,
+              opacity: 0.2,
+            },
+          },
+          '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: 0.5,
+          },
+        },
+        track: {
+          backgroundColor: DARK_COLOR_PALETTE.light,
         },
       },
     },
@@ -816,6 +969,16 @@ const darkTheme = createTheme(responsiveGlobalTheme, {
           },
         },
       },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: DARK_COLOR_PALETTE.light,
+          '&.Mui-disabled': {
+            color: DARK_COLOR_PALETTE.darkerPlus,
+          },
+        }
+      }
     },
     // MuiIconButton: {
     //   styleOverrides: {
@@ -1043,6 +1206,30 @@ const darkTheme = createTheme(responsiveGlobalTheme, {
       styleOverrides: {
         root: {
           color: DARK_COLOR_PALETTE.light,
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          '& .MuiButtonBase-root': {
+            color: DARK_COLOR_PALETTE.reverse,
+            opacity: 0.5,
+            '&.Mui-selected': {
+              color: DARK_COLOR_PALETTE.reverse,
+              opacity: 1
+            },
+          }
+        },
+        indicator: {
+          backgroundColor: DARK_COLOR_PALETTE.reverse,
+        }
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+          color: DARK_COLOR_PALETTE.reverse, 
         },
       },
     },

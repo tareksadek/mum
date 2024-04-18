@@ -46,20 +46,20 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handlePopState = useCallback((event: PopStateEvent) => {
     if (openModalName) {
-        dispatch(closeModal());
-        event.preventDefault();
+      dispatch(closeModal());
+      event.preventDefault();
     }
   }, [openModalName, dispatch]);
 
-  // useEffect(() => {
-  //     if (openModalName) {
-  //         window.history.pushState(null, "", window.location.pathname);
-  //         window.addEventListener("popstate", handlePopState);
-  //     }
-  //     return () => {
-  //         window.removeEventListener("popstate", handlePopState);
-  //     };
-  // }, [openModalName, handlePopState]);
+  useEffect(() => {
+      if (openModalName) {
+          window.history.pushState(null, "", window.location.pathname);
+          window.addEventListener("popstate", handlePopState);
+      }
+      return () => {
+          window.removeEventListener("popstate", handlePopState);
+      };
+  }, [openModalName, handlePopState]);
 
   useEffect(() => {
     const handleBackButton = (event: any) => {
@@ -85,10 +85,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     }
   }, [isLoggedIn, loadingAuth, router]);
 
-  const toggleDrawer = useCallback(() => {
-    console.log('lllll')
-    console.log(isSideMenuOpen);
-    
+  const toggleDrawer = useCallback(() => {    
     if (isSideMenuOpen) {
       dispatch(closeModal());
     } else {
@@ -101,9 +98,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       ...defaults as StaticSetup,
       ...main as FetchedSetup
     };
-    if (!setup && !loadingSetup) {
-      console.log('fetching setup');
-      
+    if (!setup && !loadingSetup) {      
       dispatch(updateSetup(staticSetupData));
     }
   }, [dispatch, setup, loadingSetup]);
@@ -154,12 +149,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <Link
             href="https://contactdyn.com"
             target="_blank"
-            sx={{
-              textAlign: 'center',
-              display: 'block',
-              fontSize: '0.8rem',
-              padding: '16px'
-            }}
+            sx={classes.link}
           >
             Powered By CDYN
           </Link>

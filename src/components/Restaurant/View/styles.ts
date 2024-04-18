@@ -35,11 +35,13 @@ export const useDefaultHeaderStyles = () => {
     boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.15)',
     borderRadius: '50%',
   };
-  const dataContainer = {};
+  const sloganContainer = {
+    opacity: 0.7
+  };
 
   const headerContainer = {};
 
-  return { headerContainer, imagesContainer, coverImageContainer, profileImageContainer, dataContainer };
+  return { headerContainer, imagesContainer, coverImageContainer, profileImageContainer, sloganContainer };
 };
 
 export const useBusinessHeaderStyles = () => {
@@ -247,4 +249,17 @@ export const useConnectModalStyles = () => {
   };
 
   return { iframeContainer };
+};
+
+export const useAboutSectionStyles = () => {
+  const theme = useTheme();
+
+  const workingHoursSection = {
+    borderBottom: `1px solid ${theme.palette.background.listItemBorder}`,
+    '&:last-of-type': {
+      borderBottom: 'none',
+    }
+  };
+
+  return { workingHoursSection };
 };
